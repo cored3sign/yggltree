@@ -22,8 +22,8 @@ function saved() {
     </p>
     <PinForm :member-id="core.memberId" @saved="saved" />
     <p class="hint">
-      If you forget it, run <strong>npm run reset-admin-pin</strong> on the family computer. Each admin then sets a new
-      PIN.
+      If you forget it, choose <strong>Reset admin PIN…</strong> from the Yggltree menu bar icon on the family computer.
+      Each admin then sets a new PIN.
     </p>
   </AppCard>
 </template>

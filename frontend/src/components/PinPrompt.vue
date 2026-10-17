@@ -38,7 +38,7 @@ function submit() {
         <AppButton variant="ghost" type="button" @click="lock.cancel()">Cancel</AppButton>
         <AppButton type="submit" :disabled="lock.prompt.busy || pin.length !== 6">Confirm</AppButton>
       </div>
-      <p class="hint">Forgot it? On the family computer, run <strong>npm run reset-admin-pin</strong>.</p>
+      <p class="hint">Forgot it? On the family computer, choose <strong>Reset admin PIN…</strong> from the Yggltree menu bar icon.</p>
     </form>
   </AppModal>
 </template>
