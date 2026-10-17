@@ -214,19 +214,9 @@ onUnmounted(() => navigator.serviceWorker?.removeEventListener('message', onServ
 // match this array's length (kept in sync by hand, like any other "two
 // things must agree" pair in this codebase).
 //
-// Steps 3 and 4 are identical on both breakpoints and stay static:
-//   - Step 3 targets `.quick-drawer__more`, inside the quick-select drawer,
-//     which is a `Teleport to="body"` modal gated only by `drawerOpen`, not
-//     by the mobile/desktop breakpoint -- the `needsDrawer` watch below
-//     still force-opens it for step 3 on desktop exactly as on mobile, so
-//     the drawer and its "More modules" link are real and clickable there
-//     too. Desktop users can already reach every module directly
-//     from the rail, but this step is about the FULL, not-yet-enabled
-//     catalog (/modules), which the drawer's link also surfaces -- still a
-//     real, sensible anchor on desktop, not just a non-broken fallback.
-//   - Step 4 targets `.topbar__menu-trigger`, which is part of the shared
-//     topbar markup that doesn't change shape between breakpoints (only
-//     padding does, via CSS) -- identical element, identical copy, on both.
+// Step 3 differs by breakpoint. On a computer it points at the Dashboard link in the left rail, and it never opens the
+// phone's quick-select drawer. On a phone it points at the drawer's "More modules" link, and the watch below opens that
+// drawer for it. Step 4 (the topbar menu) is the same on both breakpoints.
 const ONBOARDING_STEPS = computed(() => {
   const desktopSteps = [
     {
@@ -281,26 +271,29 @@ const ONBOARDING_STEPS = computed(() => {
     },
   ]
 
-  return [
-    ...(isDesktop.value ? desktopSteps : mobileSteps),
-    {
-      // Step 3: the FAB drawer's "More modules" link -- the drawer is opened
-      // programmatically for this step (below) so the real element exists to
-      // anchor to, same as step 4 opens the topbar menu. Same on both
-      // breakpoints -- see comment above.
-      selector: '.quick-drawer__more',
-      placement: 'above',
-      text: 'Open Modules to pin your favorites to this menu, in the order you want.',
-    },
-    {
-      // Step 4: the topbar avatar/menu trigger -- Settings, Help,
-      // and Sign out all live behind it. Same on both breakpoints -- see
-      // comment above.
-      selector: '.topbar__menu-trigger',
-      placement: 'below',
-      text: 'Your avatar opens Settings, Help, and more -- it\'s always here in the top corner.',
-    },
-  ]
+  // Step 3, per breakpoint: the Dashboard link at the top of the left rail on a computer, the FAB drawer's link on a phone.
+  const dashboardStep = {
+    // Step 3 (desktop): the Dashboard link right under the logo, the way back to the summary from any module.
+    selector: '.desktop-nav__brand + .desktop-nav__item',
+    placement: 'below',
+    text: 'Dashboard is at the top of this sidebar. It\'s the way back to your summary any time.',
+  }
+  const drawerStep = {
+    // Step 3 (mobile): the FAB drawer's "More modules" link. The drawer is opened for this step (see the watch below),
+    // so the real element exists to anchor to.
+    selector: '.quick-drawer__more',
+    placement: 'above',
+    text: 'Open Modules to pin your favorites to this menu, in the order you want.',
+  }
+  const menuStep = {
+    // Step 4: the topbar avatar/menu trigger -- Settings, Help, and Sign out all live behind it. Same on both breakpoints.
+    selector: '.topbar__menu-trigger',
+    placement: 'below',
+    text: 'Your avatar opens Settings, Help, and more -- it\'s always here in the top corner.',
+  }
+  return isDesktop.value
+    ? [...desktopSteps, dashboardStep, menuStep]
+    : [...mobileSteps, drawerStep, menuStep]
 })
 
 // Drives the FAB drawer / topbar menu open state to match whichever step is
@@ -322,7 +315,7 @@ watch(
       menuOpen.value = false
       return
     }
-    const needsDrawer = stepIndex === 2 // "More modules" link lives in the drawer
+    const needsDrawer = stepIndex === 2 && !isDesktop.value // the phone drawer's "More modules" link
     const needsMenu = stepIndex === 3 // avatar/menu trigger's own menu
     if (needsDrawer && !drawerOpen.value) {
       openDrawer(null)
