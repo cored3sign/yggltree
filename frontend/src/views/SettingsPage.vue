@@ -932,6 +932,13 @@ function initials(name) {
             >
               {{ relayUpdateBusy ? 'Updating the relay… this takes a few minutes' : 'Update the relay' }}
             </AppButton>
+            <template v-if="!cloudflare.connected">
+              <p class="hint">Updating the relay needs a Cloudflare connection on this computer.</p>
+              <AppButton variant="secondary" :disabled="relaySetupBusy !== ''" @click="connectWithCloudflare">
+                {{ relaySetupBusy === 'connect' ? 'Waiting for the Cloudflare page…' : 'Connect Cloudflare' }}
+              </AppButton>
+              <p v-if="relaySetupError" class="error">{{ relaySetupError }}</p>
+            </template>
             <p v-if="relayUpdateMessage" class="hint">{{ relayUpdateMessage }}</p>
           </template>
           <details v-if="core.isAdmin" class="relay-setup">

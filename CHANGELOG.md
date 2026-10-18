@@ -9,6 +9,10 @@ What changed in each version of Yggltree. Each release page on GitHub shows its 
 - **Join with a family link.** On a Mac that's reinstalled or moved over from the source version, paste the family link from **Add a device** into **Settings → Sync**. The Mac joins the same family room, so the phones stay connected.
 - **Wishlist artwork.** The wishlist drawing is in the empty state, in every color theme, and on the product page.
 
+### Fixed
+
+- The Mac app uses the Cloudflare sign-in already on the computer, so updating the relay works. A relay card with no Cloudflare sign-in now shows **Connect Cloudflare**.
+
 ### Changed
 
 - The relay setup field takes a family link or a relay address. A bare address asks for confirmation first, because it starts a new family key.

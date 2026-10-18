@@ -2,6 +2,7 @@
 // relay source copied under the data folder). Updating a relay only deploys; it never deletes.
 import { describe, it, expect, afterEach } from 'vitest'
 import { mkdir, readFile, writeFile, lstat, readlink } from 'node:fs/promises'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
   wranglerInvocation,
@@ -51,9 +52,14 @@ describe('wranglerInvocation', () => {
     const inv = wranglerInvocation(['deploy'], { YGGLTREE_WRANGLER_BIN: '/App/relay/node_modules/wrangler/bin/wrangler.js', YGGLTREE_NODE_BIN: '/App/Yggltree' })
     expect(inv).toEqual({
       command: '/App/Yggltree',
-      args: ['/App/relay/node_modules/wrangler/bin/wrangler.js', 'deploy'],
+      args: ['--require', expect.stringMatching(/wranglerPreload\.cjs$/), '/App/relay/node_modules/wrangler/bin/wrangler.js', 'deploy'],
       extraEnv: { ELECTRON_RUN_AS_NODE: '1' },
     })
+  })
+
+  it('preloads the flag that makes Wrangler read its arguments correctly inside the app', () => {
+    const preload = readFileSync(new URL('../src/wranglerPreload.cjs', import.meta.url), 'utf8')
+    expect(preload).toContain('process.defaultApp = true')
   })
 })
 

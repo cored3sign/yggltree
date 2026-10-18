@@ -14,8 +14,8 @@
 
 import { spawn } from 'node:child_process'
 import { chmod, cp, mkdir, readFile, rename, rm, symlink, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 
 export const CONNECTION_FILE = 'cloudflare.json'
 export const RELAY_DIR = fileURLToPath(new URL('../../relay/', import.meta.url))
@@ -112,13 +112,18 @@ export function runCommand(command, args, { cwd, env, timeoutMs, spawnImpl = spa
   })
 }
 
+// Wrangler treats a process as a bundled Electron app unless process.defaultApp is set. In that case it
+// reads its arguments from the wrong place and every command fails, including the sign-in check. The
+// preload sets the flag, so Wrangler runs as the plain Node program it is.
+const WRANGLER_PRELOAD = fileURLToPath(new URL('./wranglerPreload.cjs', import.meta.url))
+
 // How to run Wrangler with `args`. The desktop app bundles it and runs it with the app's own
 // Node (ELECTRON_RUN_AS_NODE). From source it's npx, as before.
 export function wranglerInvocation(args, env = process.env) {
   if (env.YGGLTREE_WRANGLER_BIN) {
     return {
       command: env.YGGLTREE_NODE_BIN || process.execPath,
-      args: [env.YGGLTREE_WRANGLER_BIN, ...args],
+      args: ['--require', WRANGLER_PRELOAD, env.YGGLTREE_WRANGLER_BIN, ...args],
       extraEnv: { ELECTRON_RUN_AS_NODE: '1' },
     }
   }
