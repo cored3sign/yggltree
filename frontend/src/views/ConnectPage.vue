@@ -239,7 +239,8 @@ function reload() {
       <h1>Connecting to your Yggltree…</h1>
       <p v-if="hubAddress" class="subtitle">{{ hubAddress }}</p>
       <p v-if="slow" class="connect-text connect-text--muted">
-        Make sure the family computer is on with Yggltree running, and this phone is on the same Wi-Fi.
+        Check that this phone has a connection, on Wi-Fi or mobile data. If it stays here, check that the family computer
+        is on and Yggltree is running there.
       </p>
     </template>
   </AppCard>
