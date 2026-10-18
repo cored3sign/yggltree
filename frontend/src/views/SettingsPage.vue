@@ -22,7 +22,7 @@ import { saveSettings as saveSettingsRecord } from '../data/settings'
 import { effectiveTheme } from '../lib/theme'
 import { createBackup, exportJson } from '../data/backup'
 import { family } from '../data/family'
-import { loadRelayConfig, saveRelayConfig, clearRelayConfig, relayPairingUrl, relayDeviceId } from '../data/relay/config'
+import { loadRelayConfig, saveRelayConfig, clearRelayConfig, relayPairingUrl, relayDeviceId, parseRelayLink } from '../data/relay/config'
 import { isStandaloneApp, isIosSafariTab } from '../lib/platform.js'
 import { newFamilyKey, deriveRoomId, deriveAuth, toBase64Url } from '../data/relay/crypto'
 import QRCode from 'qrcode'
@@ -279,13 +279,24 @@ watch(relayLink, async (link) => {
   relayQr.value = link ? await QRCode.toDataURL(link, { margin: 1, width: 220 }) : ''
 }, { immediate: true })
 
+// A family link (from Add a device on the family computer) carries the family's key, so this computer joins the
+// same room as the phones. A bare address has no key: saving it starts a new, empty room that the phones can't
+// reach, so it's only offered after the person confirms that no phone uses this relay yet.
 function startRelay() {
   relayError.value = ''
-  const url = relayUrlInput.value.trim().replace(/\/$/, '')
-  if (!/^https:\/\/[^/\s]+$/.test(url) && !/^http:\/\/localhost(:\d+)?$/.test(url)) {
-    relayError.value = 'Use the relay address, starting with https://'
+  const text = relayUrlInput.value.trim()
+  const link = parseRelayLink(text)
+  if (link) {
+    saveRelayConfig(link)
+    window.location.reload()
     return
   }
+  const url = text.replace(/\/$/, '')
+  if (!/^https:\/\/[^/\s]+$/.test(url) && !/^http:\/\/localhost(:\d+)?$/.test(url)) {
+    relayError.value = 'Paste the family link from Add a device, or a relay address that starts with https://.'
+    return
+  }
+  if (!window.confirm('Start a new family key for this relay? Only do this for a relay no phone uses yet. Phones already on this relay could not follow.')) return
   saveRelayConfig({ url, key: newFamilyKey() })
   window.location.reload()
 }
@@ -948,12 +959,16 @@ function initials(name) {
           <p v-if="relaySetupError" class="error">{{ relaySetupError }}</p>
 
           <details class="relay-setup__advanced">
-            <summary>I already have a relay address</summary>
+            <summary>Join a family that already syncs, or use a relay address</summary>
+            <p class="hint">
+              To join a family whose phones already sync, paste the family link from Add a device on the family computer.
+              It keeps the phones connected. For a relay you deployed yourself, with no phones on it yet, paste its address.
+            </p>
             <label class="form-field">
-              <span class="form-field__label">Relay address</span>
-              <input v-model="relayUrlInput" type="url" placeholder="https://your-relay.workers.dev" autocomplete="off" />
+              <span class="form-field__label">Family link or relay address</span>
+              <input v-model="relayUrlInput" type="text" placeholder="Paste the link or the address" autocomplete="off" />
             </label>
-            <AppButton variant="secondary" @click="startRelay">Start the family relay</AppButton>
+            <AppButton variant="secondary" @click="startRelay">Connect this computer</AppButton>
             <p v-if="relayError" class="error">{{ relayError }}</p>
           </details>
 
