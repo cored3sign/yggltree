@@ -15,14 +15,19 @@ export function waitAtMost(promise, ms, { setTimer = setTimeout, clearTimer = cl
   return Promise.race([promise, timeout]).finally(() => clearTimer(timer))
 }
 
-// The line shown under "Connecting to your Yggltree…" for each step. Empty once synced.
-export function stageMessage(stage, { storageTimedOut = false } = {}) {
+// The line shown under "Connecting to your Yggltree…" for each step. Empty once synced. When an attempt to reach
+// the relay has ended, the browser's close code and the number of attempts are added, so the cause shows.
+export function stageMessage(stage, { storageTimedOut = false, errorCode = null, attempts = 0 } = {}) {
   if (stage === 'storage') {
     return storageTimedOut
       ? "This browser's storage isn't responding. Trying the relay anyway."
       : "Opening this browser's storage…"
   }
-  if (stage === 'socket') return 'Reaching the family relay…'
+  if (stage === 'socket') {
+    if (!errorCode) return 'Reaching the family relay…'
+    const count = attempts > 1 ? ` (${attempts} attempts so far)` : ''
+    return `Reaching the family relay… The last attempt ended with code ${errorCode}${count}.`
+  }
   if (stage === 'handshake') return "Waiting for your family's data from the relay…"
   return ''
 }

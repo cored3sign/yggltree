@@ -64,6 +64,10 @@ export function createRelayRoom({
   // The steps a connection goes through, shown on the connecting screen: storage, socket, handshake, synced.
   let stage = 'storage'
   let storageTimedOut = false
+  // The last connection attempt's close code (1006 means the connection failed before it opened) and how many
+  // attempts have ended, so a stall shows what the browser reported.
+  let lastErrorCode = null
+  let attempts = 0
 
   const notify = () => onChange(snapshot())
   const setWs = (status) => {
@@ -217,8 +221,10 @@ export function createRelayRoom({
       ws.send(JSON.stringify({ type: 'hello', since, auth }))
     }
     ws.onmessage = onMessage
-    ws.onclose = () => {
+    ws.onclose = (event) => {
       authed = false
+      attempts++
+      lastErrorCode = event?.code ?? null
       setSynced(false)
       setStage('socket')
       setWs('disconnected')
@@ -228,7 +234,7 @@ export function createRelayRoom({
   }
 
   function snapshot() {
-    return { wsStatus: state.wsStatus, synced, attemptStartedAt, rejected, stage, storageTimedOut }
+    return { wsStatus: state.wsStatus, synced, attemptStartedAt, rejected, stage, storageTimedOut, errorCode: lastErrorCode, attempts }
   }
 
   doc.on('update', onLocalUpdate)

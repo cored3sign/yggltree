@@ -23,6 +23,12 @@ describe('stageMessage', () => {
     expect(stageMessage('handshake')).toMatch(/family's data/)
   })
 
+  it('adds the last close code and attempt count once an attempt has ended', () => {
+    expect(stageMessage('socket', { errorCode: 1006, attempts: 1 })).toMatch(/code 1006\./)
+    expect(stageMessage('socket', { errorCode: 1006, attempts: 3 })).toMatch(/code 1006 \(3 attempts so far\)/)
+    expect(stageMessage('socket', { errorCode: null, attempts: 0 })).toBe('Reaching the family relay…')
+  })
+
   it('is empty once synced, or when no step is known', () => {
     expect(stageMessage('synced')).toBe('')
     expect(stageMessage(null)).toBe('')

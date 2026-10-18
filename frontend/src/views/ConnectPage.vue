@@ -62,7 +62,13 @@ watch(
 
 // The step the relay connection is on (opening storage, reaching the relay, waiting for the family's data),
 // so a stall says where it is.
-const stepText = computed(() => stageMessage(sync.relayStage, { storageTimedOut: sync.storageTimedOut }))
+const stepText = computed(() =>
+  stageMessage(sync.relayStage, {
+    storageTimedOut: sync.storageTimedOut,
+    errorCode: sync.relayErrorCode,
+    attempts: sync.relayAttempts,
+  }),
+)
 
 // "connecting" grows a hint if it takes a while.
 const slow = ref(false)
