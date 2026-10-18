@@ -274,7 +274,7 @@ const ONBOARDING_STEPS = computed(() => {
   // Step 3, per breakpoint: the Dashboard link at the top of the left rail on a computer, the FAB drawer's link on a phone.
   const dashboardStep = {
     // Step 3 (desktop): the Dashboard link right under the logo, the way back to the summary from any module.
-    selector: '.desktop-nav__brand + .desktop-nav__item',
+    selector: '.desktop-nav > .desktop-nav__item',
     placement: 'below',
     text: 'Dashboard is at the top of this sidebar. It\'s the way back to your summary any time.',
   }
@@ -759,15 +759,10 @@ function onOnboardingClose() {
     overflow-y: auto;
   }
 }
+/* The logo is the same on every screen size: white on the orange top bar, the same width everywhere. */
 .topbar__logo {
   flex: none;
   width: 64px;
-  color: var(--text);
-}
-/* On desktop the sidebar carries the logo, so the top bar doesn't repeat it. */
-@media (min-width: 1200px) {
-  .topbar__logo {
-    display: none;
-  }
+  color: var(--accent-contrast);
 }
 </style>
