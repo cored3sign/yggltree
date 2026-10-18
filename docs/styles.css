@@ -1323,6 +1323,14 @@ p {
   fill: none;
 }
 
+.illus .fh-accent {
+  fill: var(--accent);
+}
+
+.illus .fh-ink {
+  fill: var(--text);
+}
+
 /* Theme picker */
 
 .theme-tiles {
