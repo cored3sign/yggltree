@@ -80,6 +80,8 @@ updating Yggltree never touches it.
 
 **➡️ See [`GETTING_STARTED.md`](GETTING_STARTED.md)** for the step-by-step
 guide: setting up the relay, adding devices, backups, updates, and troubleshooting.
+If your family already runs Yggltree from the source version, section 15 of that guide
+moves it to the Mac app without losing data.
 
 ## How it works
 
@@ -131,10 +133,6 @@ See [`Yggltree_vault/Roadmap-and-Known-Issues.md`](Yggltree_vault/Roadmap-and-Kn
 for details and known limits.
 
 ## License
-
-MIT. See [LICENSE](LICENSE).
-
-## License and names
 
 Yggltree is free software released under the [MIT License](LICENSE).
 Copyright (c) 2026 Yggltree contributors.

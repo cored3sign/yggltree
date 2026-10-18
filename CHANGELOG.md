@@ -2,6 +2,19 @@
 
 What changed in each version of Yggltree. Each release page on GitHub shows its section from this file as its notes.
 
+## Unreleased
+
+### Added
+
+- **Join with a family link.** On a Mac that's reinstalled or moved over from the source version, paste the family link from **Add a device** into **Settings → Sync**. The Mac joins the same family room, so the phones stay connected.
+- **Wishlist artwork.** The wishlist drawing is in the empty state, in every color theme, and on the product page.
+
+### Changed
+
+- The relay setup field takes a family link or a relay address. A bare address asks for confirmation first, because it starts a new family key.
+- Names in the setup form and the tests are generic examples.
+- The README, the setup guide, and the product page describe the Mac app's install and the source setup for developers.
+
 ## 1.0.0 (2026-10-17)
 
 ### Added

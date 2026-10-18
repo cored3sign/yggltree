@@ -13,8 +13,8 @@ The easiest way is from the Yggltree app on the family computer:
 
 1. Create a free Cloudflare account at cloudflare.com and confirm your email address.
 2. In Yggltree, open **Settings → Sync**, type a name for the relay, such as
-   `smith-family-relay`, and click **Set up my relay**. The name becomes the start of the
-   relay's address, for example `smith-family-relay.smith.workers.dev`. The first time,
+   `family-relay`, and click **Set up my relay**. The name becomes the start of the
+   relay's address, for example `family-relay.your-account.workers.dev`. The first time,
    your browser opens a Cloudflare page: sign in, click **Allow**, and come back to
    Yggltree. Yggltree then sets up the relay on your account. This takes a few minutes.
 3. Each phone joins with the family QR code shown on that same screen. See
@@ -30,19 +30,22 @@ keeps its own copy of the family's data either way.
 **Other ways to set up the relay**
 
 - **The Deploy to Cloudflare button**, below. It creates the relay on your account.
-  Cloudflare then shows the relay's address. Paste that address into **Relay address**
-  in **Settings → Sync**, and click **Start the family relay**.
+  Cloudflare then shows the relay's address. In **Settings → Sync**, open **Join a family that
+  already syncs, or use a relay address**, paste the address, and click **Connect this computer**.
+  Confirm when Yggltree asks: a new address starts a new family key, so do this before any phone
+  uses the relay.
 - **The command line**, for someone comfortable with a terminal. After `npx wrangler login`:
 
       cd relay
       npm run build:app
-      npx wrangler deploy --name smith-family-relay
+      npx wrangler deploy --name family-relay
 
 A relay's name can't be changed once it's deployed. To rename it, create a new relay
 and then replace the old one from Settings.
 
-Keep the address. You'll need it again if the browser's data on the family computer
-is cleared, or after a restore (GETTING_STARTED.md, section 10).
+Keep the family link, not just the address: it carries the family's key. Copy it from
+**Settings → Sync → Add a device** on the family computer. You'll need it again if the
+browser's data on the family computer is cleared, or after a restore (GETTING_STARTED.md, section 10).
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cored3sign/yggltree/tree/main/relay)
 

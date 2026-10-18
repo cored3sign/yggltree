@@ -32,6 +32,7 @@ company server that can read your data.
 12. [Troubleshooting](#12-troubleshooting)
 13. [Security notes](#13-security-notes)
 14. [Using the modules](#14-using-the-modules)
+15. [Moving from running Yggltree from source](#15-moving-from-running-yggltree-from-source)
 
 ---
 
@@ -125,9 +126,9 @@ Set it up once, from Settings.
 and confirm your email address.
 
 **Step 2: Set up the relay.** On the family computer, open **Settings → Sync**.
-Type a name for the relay, such as `smith-family-relay`, and click **Set up my relay**.
+Type a name for the relay, such as `family-relay`, and click **Set up my relay**.
 The name becomes the start of the relay's address, for example
-`smith-family-relay.smith.workers.dev`.
+`family-relay.your-account.workers.dev`.
 
 The first time, your browser opens a Cloudflare page. Sign in, click **Allow**, and come
 back to Yggltree. Yggltree then sets up the relay on your Cloudflare account. This takes
@@ -135,8 +136,10 @@ a few minutes. When it's done, the relay's address and the QR code for phones ap
 the same screen. Keep the address.
 
 You can also set the relay up with the **Deploy to Cloudflare** button in the
-[relay setup guide](relay/README.md). Then open **I already have a relay address** on the
-same screen and paste the address.
+[relay setup guide](relay/README.md). Then, on the same screen, open **Join a family that
+already syncs, or use a relay address**, paste the address, and click **Connect this computer**.
+Yggltree asks you to confirm, because a new address starts a new family key. Confirm only
+before any phone uses the relay.
 
 **If the browser login doesn't work for you**, open **Use a Cloudflare API token instead**
 on the same screen and paste a Cloudflare API token. Make the token on Cloudflare's **API
@@ -216,13 +219,13 @@ family computer's **data folder**, and in any backup files you make. Make
 backups anyway.
 
 - **Download a backup from the app:** an admin opens **Settings → Data
-  export & import → Download full backup**. This saves one `.fhub.json` file
+  export & import → Download full backup**. This saves one `.yggltree.json` file
   with everything, photos included. Keep a copy somewhere safe, such as a USB
   stick or cloud drive.
 - **Automatic daily backups:** while Yggltree runs, it saves a backup once
   a day if anything changed. It keeps the newest 14. They are in the
   `backups` folder inside the data folder, named like
-  `yggltree-2026-10-08.fhub.json`.
+  `yggltree-2026-10-08.yggltree.json`.
 - **Copy the whole data folder:** stop Yggltree first, then copy the folder
   somewhere safe. The **Data folder** line in your Yggltree window shows where
   it is. By default it's:
@@ -259,8 +262,9 @@ with the backup's contents.
 - **Only on the family computer.** Other devices show **Restore from the
   family computer** instead of a restore button.
 - An admin goes to **Settings → Data export & import → Restore from backup…**.
-  Choose the `.fhub.json` file (an automatic one from the `backups` folder works
-  too), type `REPLACE`, and click **Replace all data**.
+  Choose the backup file, a `.yggltree.json` file (an automatic one from the `backups`
+  folder works too; older `.fhub.json` files still restore), type `REPLACE`, and click
+  **Replace all data**.
 - Close any other Yggltree tabs on the family computer first. If another tab
   or browser on the family computer was open, it shows **Not syncing** with
   "Your Yggltree was restored or reset. Reload this page." Reload it.
@@ -272,14 +276,13 @@ with the backup's contents.
 
 ### After a restore
 
-1. On the family computer, open **Settings → Sync**. If the relay address
-   is there and the relay shows as running, go on to step 2. If the relay address
-   is empty, start the relay again: paste the address Cloudflare gave you (it ends
-   in `.workers.dev`) into **Relay address** and click **Start the family relay**.
-   You can also create a new relay from the same screen ([section 5](#5-set-up-the-family-relay)).
-2. Starting the relay creates a new family key, so every phone has to join
-   again. Each phone scans the new QR code on the same screen, as in
-   [section 6](#6-add-a-device).
+1. On the family computer, open **Settings → Sync**. If the relay shows as running, go on to
+   step 2. If the relay is missing, open **Join a family that already syncs, or use a relay
+   address**, paste the family link you copied from **Add a device** before the restore, and
+   click **Connect this computer**. The phones keep the same key, so they stay connected.
+2. If you only have the relay's address and not the family link, connecting it starts a new
+   family key. Then every phone has to join again: each phone scans the new QR code on the same
+   screen, as in [section 6](#6-add-a-device).
 
 ---
 
@@ -311,13 +314,13 @@ To turn off the daily check, choose **Check for updates every day** in the menu 
 | The menu bar shows **Not running**, with **Port 8787 is being used by another program** | Close the other program, then choose **Start Yggltree** from the leaf in the menu bar. |
 | The window says **Another program appears to be using Yggltree's data folder** | Usually left over after a crash. If Yggltree really isn't running, delete the `hub.lock` file the message names and start again. |
 | The family computer shows **Yggltree isn't running** | Open Yggltree from Applications, or choose **Start Yggltree** from the leaf in the menu bar. |
-| **Relay address** says it must start with `https://` | Paste the whole address Cloudflare gave you, starting with `https://`. |
+| The relay field says to paste a family link or a relay address | Paste the whole family link from **Add a device**. For a relay with no phones on it yet, paste the address Cloudflare gave you, which starts with `https://`. |
 | There's no QR code in **Settings → Sync** | Only admins see it. Expand **Add a device** to show it. Ask an admin to open the page on the family computer. |
 | Scanning the QR code doesn't work | Make sure you allowed the camera when the phone asked. Or tap **Or paste the family link** and paste the link from the family computer. |
 | The phone shows **Join your family** after you've joined | Scan the family QR code again from **Settings → Sync**. |
 | The phone shows **Not syncing** | Check the phone has a connection (Wi-Fi or mobile data). Open the icon again. If it still says **Not syncing**, scan the family QR code again. |
 | A device shows **Your Yggltree was restored or reset. Reload this page.** | Reload the page on the family computer ([section 10](#10-restoring-a-backup)). |
-| **Settings → Sync** has no relay address | This happens after the browser's data is cleared, or after a restore. Paste the relay address into **Relay address**, click **Start the family relay**, and have each phone scan the new QR code ([section 10](#10-restoring-a-backup)). |
+| **Settings → Sync** has no relay | This happens after the browser's data is cleared, or after a restore. Open **Join a family that already syncs, or use a relay address**, paste the family link from **Add a device**, and click **Connect this computer**. If you only have the address, the phones have to join again, because a new family key starts ([section 10](#10-restoring-a-backup)). |
 | You can't find the relay address | It's the address Cloudflare gave you when you deployed the relay. In the Cloudflare dashboard, open **Workers & Pages** and choose the relay; its address is shown on its page. |
 | A notification never arrives | Turn notifications on from the Home Screen app ([section 6](#6-add-a-device)). On iPhone, notifications only work from the Home Screen app. |
 | An admin forgot their PIN | Choose **Reset admin PIN…** from the leaf in the menu bar, and confirm. Each admin sets a new PIN the next time they open Yggltree. |
@@ -336,7 +339,7 @@ To turn off the daily check, choose **Check for updates every day** in the menu 
 - **The family link is a key.** Anyone with the link can join your family, so
   don't post a photo of the QR code or the link. Keep it private, like a house
   key.
-- **Backups aren't encrypted.** A `.fhub.json` backup and the data folder hold
+- **Backups aren't encrypted.** A `.yggltree.json` backup and the data folder hold
   your family's data in readable form. Keep them private.
 - **Paired devices keep a full copy** of your family's data, including photos.
 - **The admin PIN keeps other members out of admin settings on a shared
@@ -361,3 +364,16 @@ Every module is open to everyone in the family. There is nothing to switch on.
 **Calendar events.** Add a location and notes to an event. The location shows in that day's list, and the notes show when you open the event.
 
 **Notifications.** Tapping a notification opens the page it's about, with that item highlighted. On a phone, tapping a family update opens the newest change from another family member.
+
+---
+
+## 15. Moving from running Yggltree from source
+
+Before the Mac app, Yggltree ran from its source folder, with `npm start` or **Start Yggltree.command**, and you opened it in a browser at `http://localhost:8787`. The Mac app uses the same data folder and the same port, so your family's data is already there. Only the relay connection needs moving over. Your phones keep their copy of the family's data, and they stay connected as long as the family key is the same.
+
+1. **Copy the family link.** In the browser on the family computer, open **Settings → Sync**, expand **Add a device**, and copy the whole link. Keep it private.
+2. **Save a backup.** Choose **Settings → Data export & import → Download full backup**, and keep the file somewhere safe.
+3. **Stop the old copy.** Close the Terminal window that's running Yggltree, or press Control-C in it. Close the old browser tab too.
+4. **Install the Mac app** from [section 2](#2-install-on-a-mac), and open it. Your family is already set up, so Yggltree opens your data. Open your admin profile with your PIN, as before.
+5. **Reconnect the relay.** In **Settings → Sync**, open **Join a family that already syncs, or use a relay address**, paste the family link from step 1, and click **Connect this computer**.
+6. **Check a phone.** Open Yggltree on a phone. It should show your family as before. If it says **Not syncing**, follow [section 12](#12-troubleshooting).
