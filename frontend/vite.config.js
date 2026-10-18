@@ -1,5 +1,10 @@
+import { readFileSync } from 'node:fs'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
+
+// The app's version number, from the root package.json. It's baked into each build next to the build
+// stamp, so the Help page can show both on every device.
+const APP_VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version
 
 // Force-update prompt on a stale PWA build: a build-time version
 // stamp, generated once per `vite build` and baked into the bundle as
@@ -17,7 +22,7 @@ function buildVersionPlugin() {
   return {
     name: 'build-version',
     config() {
-      return { define: { __APP_BUILD_VERSION__: JSON.stringify(version) } }
+      return { define: { __APP_BUILD_VERSION__: JSON.stringify(version), __APP_VERSION__: JSON.stringify(APP_VERSION) } }
     },
     generateBundle() {
       this.emitFile({

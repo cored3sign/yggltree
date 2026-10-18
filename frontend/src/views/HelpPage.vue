@@ -36,6 +36,11 @@ const lastSynced = computed(() => lastSyncedText(sync.lastSyncedAt, now.value))
 // The family relay: the address phones sync through and open to install the
 // app. Read once; the relay is set up from Settings, which reloads the page.
 const relayAddress = loadRelayConfig()?.url ?? null
+// Which copy of the app this is, for comparing devices: the version number and the build stamp. Phones load
+// the app from the relay, so a phone's build is the relay's build.
+const APP_VERSION = __APP_VERSION__
+const APP_BUILD = __APP_BUILD_VERSION__
+const runningFrom = computed(() => (sync.isHubMachine ? 'This family computer' : 'Your family relay'))
 
 // No router scrollBehavior: scroll to the card for /help#sync ourselves.
 function scrollToHash() {
@@ -144,6 +149,20 @@ watch(() => route.hash, scrollToHash)
       </p>
     </AppCard>
     <section class="about" aria-label="About Yggltree">
+      <dl class="about__versions" aria-label="Version details">
+        <div>
+          <dt>Version</dt>
+          <dd>{{ APP_VERSION }}</dd>
+        </div>
+        <div>
+          <dt>Build</dt>
+          <dd><code>{{ APP_BUILD }}</code></dd>
+        </div>
+        <div>
+          <dt>Running from</dt>
+          <dd>{{ runningFrom }}</dd>
+        </div>
+      </dl>
       <p><strong>Yggltree</strong> &copy; 2026 Yggltree contributors. Free software under the MIT License.</p>
       <p>
         The software is provided &ldquo;as is&rdquo;, without warranty of any kind. &ldquo;Yggltree&rdquo; and the
@@ -322,5 +341,27 @@ watch(() => route.hash, scrollToHash)
 
 .about p + p {
   margin-top: 8px;
+}
+
+.about__versions {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 16px;
+  margin: 0 0 16px;
+}
+
+.about__versions div {
+  display: contents;
+}
+
+.about__versions dt {
+  color: var(--text-muted);
+}
+
+.about__versions dd {
+  margin: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 </style>
