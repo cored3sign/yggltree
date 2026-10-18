@@ -18,6 +18,13 @@ import { encryptBytes, decryptBytes, deriveAuth, toBase64, fromBase64, toBase64U
 import { PRESENCE_ORIGIN, RELAY_REMOTE_ORIGIN as REMOTE } from '../origins.js'
 import { STORAGE_WAIT_MS, waitAtMost } from './stage.js'
 
+// The address a live connection to a room uses. A relay address is https:// (or http:// for a local relay),
+// and a WebSocket needs wss:// (or ws://). Some browsers refuse an https:// address for a WebSocket, so it's
+// converted here, every time.
+export function relaySocketUrl(url, roomId) {
+  return `${url.replace(/\/$/, '').replace(/^http/, 'ws')}/room/${roomId}`
+}
+
 export const CHUNK_BYTES = 192 * 1024
 const ID_PATTERN = /^([0-9a-f]+)~(\d+)~(\d+)$/
 
@@ -214,7 +221,16 @@ export function createRelayRoom({
     authed = false
     setSynced(false)
     setWs('connecting')
-    ws = new WebSocketImpl(`${url.replace(/\/$/, '')}/room/${roomId}`)
+    try {
+      ws = new WebSocketImpl(relaySocketUrl(url, roomId))
+    } catch (err) {
+      // The browser refused the address. Count it like a failed attempt, so the screen shows it.
+      attempts++
+      lastErrorCode = err?.name ?? 'error'
+      setWs('disconnected')
+      if (!closed && !rejected) retryTimer = setTimeout(connect, retryMs)
+      return
+    }
     ws.onopen = () => {
       setWs('connected')
       setStage('handshake')
