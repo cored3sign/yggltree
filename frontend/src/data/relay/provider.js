@@ -16,6 +16,7 @@ import { sha256 } from '@noble/hashes/sha2.js'
 import { randomBytes, bytesToHex } from '@noble/hashes/utils.js'
 import { encryptBytes, decryptBytes, deriveAuth, toBase64, fromBase64, toBase64Url } from './crypto.js'
 import { PRESENCE_ORIGIN, RELAY_REMOTE_ORIGIN as REMOTE } from '../origins.js'
+import { STORAGE_WAIT_MS, waitAtMost } from './stage.js'
 
 export const CHUNK_BYTES = 192 * 1024
 const ID_PATTERN = /^([0-9a-f]+)~(\d+)~(\d+)$/
@@ -60,6 +61,9 @@ export function createRelayRoom({
   let retryTimer = null
   let attemptStartedAt = now()
   const state = { wsStatus: 'connecting' }
+  // The steps a connection goes through, shown on the connecting screen: storage, socket, handshake, synced.
+  let stage = 'storage'
+  let storageTimedOut = false
 
   const notify = () => onChange(snapshot())
   const setWs = (status) => {
@@ -69,6 +73,11 @@ export function createRelayRoom({
   const setSynced = (value) => {
     if (synced === value) return
     synced = value
+    notify()
+  }
+  const setStage = (value) => {
+    if (stage === value) return
+    stage = value
     notify()
   }
 
@@ -86,8 +95,17 @@ export function createRelayRoom({
     }
   }
 
+  // The local outbox must open before connecting. If it doesn't open in time, connect anyway: the changes
+  // in it are still kept, and the next load reads them again.
   const ready = (async () => {
-    for (const row of (await outbox.all(roomId)) ?? []) pending.set(row.id, row)
+    let rows = null
+    try {
+      rows = await waitAtMost(outbox.all(roomId), STORAGE_WAIT_MS)
+    } catch {
+      storageTimedOut = true
+    }
+    for (const row of rows ?? []) pending.set(row.id, row)
+    setStage('socket')
   })()
 
   // Every change is uploaded except the ones this relay applied itself. That includes
@@ -175,6 +193,7 @@ export function createRelayRoom({
     if (msg.type === 'caught-up') {
       authed = true
       setSynced(true)
+      setStage('synced')
       flushPending()
       sendWholeDocument()
       return
@@ -194,12 +213,14 @@ export function createRelayRoom({
     ws = new WebSocketImpl(`${url.replace(/\/$/, '')}/room/${roomId}`)
     ws.onopen = () => {
       setWs('connected')
+      setStage('handshake')
       ws.send(JSON.stringify({ type: 'hello', since, auth }))
     }
     ws.onmessage = onMessage
     ws.onclose = () => {
       authed = false
       setSynced(false)
+      setStage('socket')
       setWs('disconnected')
       if (!closed && !rejected) retryTimer = setTimeout(connect, retryMs)
     }
@@ -207,7 +228,7 @@ export function createRelayRoom({
   }
 
   function snapshot() {
-    return { wsStatus: state.wsStatus, synced, attemptStartedAt, rejected }
+    return { wsStatus: state.wsStatus, synced, attemptStartedAt, rejected, stage, storageTimedOut }
   }
 
   doc.on('update', onLocalUpdate)

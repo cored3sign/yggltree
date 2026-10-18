@@ -165,6 +165,9 @@ export const useSyncStore = defineStore('sync', {
     problem: null,
     status: 'connecting',
     statusCopy: statusCopy('connecting'),
+    // The relay connection's current step (see data/relay/stage.js), for the connecting screen.
+    relayStage: null,
+    storageTimedOut: false,
     pendingReplace: null,
     // A confirm-replace entered the wipe and failed: the open family has
     // been destroyed (and a database may be gone), so the app must not
@@ -257,6 +260,8 @@ export const useSyncStore = defineStore('sync', {
       if (problem && config && problem.roomId !== config.roomId) problem = null
       if (!sameJson(this.problem, problem)) this.problem = problem
       this.lastSyncedAt = snap?.lastSyncedAt ?? getLastSyncedAt(opts)
+      this.relayStage = snap?.stage ?? null
+      this.storageTimedOut = !!snap?.storageTimedOut
       const status = deriveSyncStatus({
         hasConfig: !!config,
         problem: this.problem,

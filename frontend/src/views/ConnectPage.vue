@@ -7,6 +7,7 @@ import { connectState } from '../lib/connectState'
 import { family } from '../data/family'
 import { createBackup } from '../data/backupFormat.js'
 import { parseRelayLink } from '../data/relay/config.js'
+import { stageMessage } from '../data/relay/stage.js'
 import { offerRelayJoin } from '../data/relay/pending.js'
 import { isIosDevice, isIosSafariTab, isStandaloneApp } from '../lib/platform.js'
 import IosInstallGuide from '../components/IosInstallGuide.vue'
@@ -58,6 +59,10 @@ watch(
     if (leave) router.replace('/')
   },
 )
+
+// The step the relay connection is on (opening storage, reaching the relay, waiting for the family's data),
+// so a stall says where it is.
+const stepText = computed(() => stageMessage(sync.relayStage, { storageTimedOut: sync.storageTimedOut }))
 
 // "connecting" grows a hint if it takes a while.
 const slow = ref(false)
@@ -238,6 +243,7 @@ function reload() {
     <template v-else>
       <h1>Connecting to your Yggltree…</h1>
       <p v-if="hubAddress" class="subtitle">{{ hubAddress }}</p>
+      <p v-if="stepText" class="connect-text connect-text--muted">{{ stepText }}</p>
       <p v-if="slow" class="connect-text connect-text--muted">
         Check that this phone has a connection, on Wi-Fi or mobile data. If it stays here, check that the family computer
         is on and Yggltree is running there.

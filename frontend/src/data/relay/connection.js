@@ -71,6 +71,8 @@ export function connectRelay({
         attemptStartedAt: m.attemptStartedAt,
         lastSyncedAt,
         rejected: m.rejected || assets.rejected,
+        stage: m.stage,
+        storageTimedOut: m.storageTimedOut,
       }
     },
     on(type, fn) {
