@@ -52,7 +52,7 @@ describe('loans', () => {
   it('orders open loans by due date and returns them', () => {
     const { doc, admin } = newFamilyDoc()
     const later = saveLoan(doc, admin, { direction: 'borrowed', counterparty_name: 'Library', due_date: '2026-12-01' })
-    const sooner = saveLoan(doc, admin, { direction: 'lent_out', counterparty_name: 'Sam', due_date: '2026-10-10' })
+    const sooner = saveLoan(doc, admin, { direction: 'lent_out', counterparty_name: 'Alex', due_date: '2026-10-10' })
     saveLoan(doc, admin, { direction: 'lent_out', counterparty_name: 'Jo' })
     expect(listLoans(doc).map((l) => l.id).slice(0, 2)).toEqual([sooner, later])
     returnLoan(doc, sooner)

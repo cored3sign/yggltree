@@ -11,7 +11,7 @@ describe('backup', () => {
   it('round-trips main and asset docs through the backup file', () => {
     const doc = new Y.Doc()
     const assets = new Y.Doc()
-    setUpFamily(doc, { familyName: 'Rivera', adminName: 'Sam' })
+    setUpFamily(doc, { familyName: 'Smith', adminName: 'Alex' })
     insert(doc, 'todos', { title: 'Dishes' }, 't1')
     const photo = putAsset(assets, new Uint8Array([5, 6]), 'image/jpeg')
     const parsed = parseBackup(createBackup({ doc, assets }))
@@ -32,7 +32,7 @@ describe('backup', () => {
   it('restore replaces what is stored in IndexedDB', async () => {
     const opts = { dbName: 'restore-main', assetsDbName: 'restore-assets' }
     const live = await openFamily(opts)
-    setUpFamily(live.doc, { familyName: 'Old', adminName: 'Sam' })
+    setUpFamily(live.doc, { familyName: 'Old', adminName: 'Alex' })
     insert(live.doc, 'todos', { title: 'Old todo' }, 'old')
 
     const source = new Y.Doc()
@@ -49,9 +49,9 @@ describe('backup', () => {
 
   it('JSON export includes settings and every collection', () => {
     const doc = new Y.Doc()
-    setUpFamily(doc, { familyName: 'Rivera', adminName: 'Sam' })
+    setUpFamily(doc, { familyName: 'Smith', adminName: 'Alex' })
     const out = exportJson(doc)
-    expect(out.settings.family_name).toBe('Rivera')
+    expect(out.settings.family_name).toBe('Smith')
     expect(out.collections.members).toHaveLength(1)
     expect(out.collections.checkin_prompts).toHaveLength(all(doc, 'checkin_prompts').length)
   })

@@ -5,8 +5,8 @@ import { getSettings, saveSettings } from './settings'
 describe('settings', () => {
   it('saves family settings (admin only, validated)', () => {
     const { doc, admin, kid } = newFamilyDoc()
-    saveSettings(doc, admin, { family_name: 'The Riveras', week_start_day: 'monday' })
-    expect(getSettings(doc)).toMatchObject({ family_name: 'The Riveras', week_start_day: 'monday' })
+    saveSettings(doc, admin, { family_name: 'The Smiths', week_start_day: 'monday' })
+    expect(getSettings(doc)).toMatchObject({ family_name: 'The Smiths', week_start_day: 'monday' })
     expect(() => saveSettings(doc, admin, { family_name: 'x', week_start_day: 'friday' })).toThrow('week_start_day must be sunday or monday')
     expect(() => saveSettings(doc, kid, { family_name: 'x', week_start_day: 'sunday' })).toThrow('Only an admin can do that')
   })

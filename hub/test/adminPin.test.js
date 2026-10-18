@@ -25,7 +25,7 @@ function adminRecords(doc) {
 describe('resetAdminPins', () => {
   it('clears every admin PIN, names the admins, and leaves other members alone', () => {
     const doc = new Y.Doc()
-    setUpFamily(doc, { familyName: 'Rivera', adminName: 'Sam', modules: ['todos'] })
+    setUpFamily(doc, { familyName: 'Smith', adminName: 'Alex', modules: ['todos'] })
     for (const admin of adminRecords(doc)) admin.set('pin_hash', 'set-by-admin')
     const member = new Y.Map()
     member.set('name', 'Alex')
@@ -33,7 +33,7 @@ describe('resetAdminPins', () => {
     member.set('pin_hash', 'not-an-admin')
     doc.getMap('members').set('member-alex', member)
 
-    expect(resetAdminPins(doc)).toEqual(['Sam'])
+    expect(resetAdminPins(doc)).toEqual(['Alex'])
     expect(adminRecords(doc).every((m) => m.get('pin_hash') === null && m.get('pin_salt') === null)).toBe(true)
     expect(member.get('pin_hash')).toBe('not-an-admin')
   })
@@ -74,7 +74,7 @@ describe('POST /api/admin/reset-pin', () => {
     const dataDir = await fx.tmpDir()
     const hub = await fx.hub({ dataDir })
     const doc = await hub._debug.doc('main')
-    setUpFamily(doc, { familyName: 'Rivera', adminName: 'Sam', modules: ['todos'] })
+    setUpFamily(doc, { familyName: 'Smith', adminName: 'Alex', modules: ['todos'] })
     for (const admin of adminRecords(doc)) admin.set('pin_hash', 'set-by-admin')
     return { hub, doc, dataDir }
   }
@@ -108,7 +108,7 @@ describe('POST /api/admin/reset-pin', () => {
       body: {},
     })
     expect(res.status).toBe(200)
-    expect(res.json).toEqual({ ok: true, admins: ['Sam'] })
+    expect(res.json).toEqual({ ok: true, admins: ['Alex'] })
     expect(adminRecords(doc).every((m) => m.get('pin_hash') === null)).toBe(true)
   })
 

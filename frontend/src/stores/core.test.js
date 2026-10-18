@@ -72,7 +72,7 @@ describe('core.createFamily', () => {
     await useSyncStore().boot({})
     const core = useCoreStore()
     const before = listMembers(doc).length
-    await expect(core.createFamily({ familyName: 'Other', adminName: 'Sam' })).rejects.toThrow('Your family is already set up on this hub')
+    await expect(core.createFamily({ familyName: 'Other', adminName: 'Alex' })).rejects.toThrow('Your family is already set up on this hub')
     expect(listMembers(doc)).toHaveLength(before)
     expect(claims).toHaveLength(1)
   })

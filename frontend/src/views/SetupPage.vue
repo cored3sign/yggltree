@@ -124,8 +124,8 @@ function closeRestore() {
     <h1>Set up your Yggltree</h1>
     <p class="subtitle">Set up your family on this computer. Phones and tablets join later with the family QR code from Settings → Sync.</p>
     <form class="auth-form" @submit.prevent="submit">
-      <FormField v-model="familyName" label="Family name" placeholder="The Riveras" required />
-      <FormField v-model="yourName" label="Your name" placeholder="Sam" required />
+      <FormField v-model="familyName" label="Family name" placeholder="The Smiths" required />
+      <FormField v-model="yourName" label="Your name" placeholder="Alex" required />
       <p v-if="error" class="error">{{ error }}</p>
       <AppButton type="submit" variant="primary" :disabled="creating">
         {{ creating ? 'Creating…' : 'Create family' }}

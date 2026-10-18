@@ -46,20 +46,20 @@ describe('npm run reset-admin-pin', () => {
   it('clears the PINs with the token, when asked and confirmed', async () => {
     const dir = await fx.tmpDir()
     const token = await createResetToken(dir)
-    const h = harness({ answer: 'yes', response: ok(['Sam', 'Pat']) })
+    const h = harness({ answer: 'yes', response: ok(['Alex', 'Pat']) })
     const code = await h.run([], dir)
     expect(code).toBe(0)
     expect(h.calls).toHaveLength(1)
     expect(h.calls[0].url).toBe('http://127.0.0.1:8787/api/admin/reset-pin')
     expect(h.calls[0].init.headers[RESET_HEADER]).toBe(token)
     expect(h.calls[0].init.headers['x-family-hub-admin']).toBe('1')
-    expect(h.lines.join('\n')).toContain('Cleared the admin PIN for: Sam, Pat.')
+    expect(h.lines.join('\n')).toContain('Cleared the admin PIN for: Alex, Pat.')
   })
 
   it('changes nothing when the answer is no', async () => {
     const dir = await fx.tmpDir()
     await createResetToken(dir)
-    const h = harness({ answer: 'n', response: ok(['Sam']) })
+    const h = harness({ answer: 'n', response: ok(['Alex']) })
     expect(await h.run([], dir)).toBe(0)
     expect(h.calls).toHaveLength(0)
     expect(h.lines).toContain('Nothing changed.')
@@ -68,7 +68,7 @@ describe('npm run reset-admin-pin', () => {
   it('skips the question with --yes', async () => {
     const dir = await fx.tmpDir()
     await createResetToken(dir)
-    const h = harness({ answer: 'n', response: ok(['Sam']) })
+    const h = harness({ answer: 'n', response: ok(['Alex']) })
     expect(await h.run(['--yes'], dir)).toBe(0)
     expect(h.calls).toHaveLength(1)
   })
