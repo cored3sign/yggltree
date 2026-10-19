@@ -153,10 +153,20 @@ function showHub() {
 
 // --- The menu bar ------------------------------------------------------------------------------
 
+// The Mac menu bar uses black template images that macOS tints. A Windows taskbar is often dark, so Windows
+// gets a full-color leaf that doesn't depend on tinting.
+const TRAY_ICONS = process.platform === 'win32'
+  ? { idle: 'trayWindows.png', attention: 'trayWindows.png' }
+  : { idle: 'trayTemplate.png', attention: 'trayAttentionTemplate.png' }
+
+function trayImage(name) {
+  const icon = nativeImage.createFromPath(join(here, 'assets', name))
+  icon.setTemplateImage(process.platform === 'darwin')
+  return icon
+}
+
 function createTray() {
-  const icon = nativeImage.createFromPath(join(here, 'assets', 'trayTemplate.png'))
-  icon.setTemplateImage(true)
-  tray = new Tray(icon)
+  tray = new Tray(trayImage(TRAY_ICONS.idle))
   tray.setToolTip('Yggltree')
   refreshMenu()
 }
@@ -168,10 +178,7 @@ function refreshMenu() {
   const items = buildMenu(state).map(toElectronItem)
   tray.setContextMenu(Menu.buildFromTemplate(items))
   if (tray.setImage) {
-    const name = needsAttention(state) ? 'trayAttentionTemplate.png' : 'trayTemplate.png'
-    const icon = nativeImage.createFromPath(join(here, 'assets', name))
-    icon.setTemplateImage(true)
-    tray.setImage(icon)
+    tray.setImage(trayImage(needsAttention(state) ? TRAY_ICONS.attention : TRAY_ICONS.idle))
   }
 }
 

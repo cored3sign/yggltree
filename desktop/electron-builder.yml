@@ -46,3 +46,18 @@ dmg:
       y: 180
       type: link
       path: /Applications
+win:
+  icon: build/icon.png
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # Unsigned, like the Mac app. Windows shows a SmartScreen warning the first time: choose More info, then Run anyway.
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Yggltree
+  artifactName: "Yggltree-Setup-${arch}.${ext}"

@@ -1,0 +1,42 @@
+# Builds the Windows installer on a Windows runner, for testing. Start it by hand from the Actions tab
+# (Windows build (test) → Run workflow). It uploads the installer as a run artifact and publishes nothing.
+# Actions are pinned to commit SHAs, the same as in release.yml.
+name: Windows build (test)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Install and test
+        shell: bash
+        run: |
+          npm ci --ignore-scripts
+          npm test -w hub
+          npm test -w frontend
+      - name: Build the frontend
+        shell: bash
+        run: npm run build
+      - name: Build the Windows installer
+        shell: bash
+        working-directory: desktop
+        run: |
+          npm ci --ignore-scripts
+          npm test
+          node scripts/stage.mjs --arch x64 --platform win
+          npx electron-builder --win --x64 --publish never
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Yggltree-Setup-x64
+          path: desktop/dist/Yggltree-Setup-x64.exe

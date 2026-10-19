@@ -152,7 +152,8 @@ export async function relayWorkDir({ sourceDir, dataDir, env = process.env }) {
   for (const entry of ['wrangler.jsonc', 'package.json', 'src', 'public']) {
     await cp(join(sourceDir, entry), join(work, entry), { recursive: true })
   }
-  await symlink(join(sourceDir, 'node_modules'), join(work, 'node_modules'))
+  // A junction on Windows, which doesn't need administrator rights or Developer Mode. macOS and Linux ignore the type.
+  await symlink(join(sourceDir, 'node_modules'), join(work, 'node_modules'), 'junction')
   return work
 }
 
