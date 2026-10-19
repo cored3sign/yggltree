@@ -44,7 +44,8 @@ describe('resetAdminPins', () => {
 })
 
 describe('the reset token', () => {
-  it('is written owner-only, and a new one replaces it on each start', async () => {
+  // Windows doesn't keep Unix file modes. The file sits in the user's own profile folder, which only that user can read.
+  it.skipIf(process.platform === 'win32')('is written owner-only, and a new one replaces it on each start', async () => {
     const dir = await fx.tmpDir()
     const first = await createResetToken(dir)
     const mode = (await stat(join(dir, RESET_TOKEN_FILE))).mode & 0o777

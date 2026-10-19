@@ -16,7 +16,7 @@ function fakeChild({ exitOnKill = true } = {}) {
   return child
 }
 
-function harness({ healthy = [false, true], exitOnKill, startupTimeoutMs = 2000 } = {}) {
+function harness({ healthy = [false, true], exitOnKill, startupTimeoutMs = 2000, platform } = {}) {
   const spawned = []
   const answers = [...healthy]
   const hub = new HubProcess({
@@ -33,6 +33,7 @@ function harness({ healthy = [false, true], exitOnKill, startupTimeoutMs = 2000 
       return child
     },
     healthCheck: async () => (answers.length > 1 ? answers.shift() : answers[0]),
+    platform,
   })
   return { hub, spawned }
 }
@@ -66,6 +67,21 @@ test('stopping sends SIGTERM and returns to stopped', async () => {
   assert.equal(await hub.stop(), 'stopped')
   assert.deepEqual(spawned[0].child.killed, ['SIGTERM'])
   assert.equal(hub.child, null)
+})
+
+test('on Windows, stopping sends the hub a stop message, not a signal', async () => {
+  const { hub, spawned } = harness({ healthy: [false, true], platform: 'win32' })
+  await hub.start()
+  const child = spawned[0].child
+  const sent = []
+  child.connected = true
+  child.send = (message) => {
+    sent.push(message)
+    setImmediate(() => child.emit('exit', 0))
+  }
+  assert.equal(await hub.stop(), 'stopped')
+  assert.deepEqual(sent, ['stop'])
+  assert.deepEqual(child.killed, [])
 })
 
 test('restart stops and starts this app\'s hub again', async () => {

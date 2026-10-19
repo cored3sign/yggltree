@@ -41,8 +41,9 @@ export class HubProcess {
     startupTimeoutMs = STARTUP_TIMEOUT_MS,
     stopGraceMs = STOP_GRACE_MS,
     pollMs = POLL_MS,
+    platform = process.platform,
   }) {
-    Object.assign(this, { command, args, env, cwd, port, spawnImpl, healthCheck, log, startupTimeoutMs, stopGraceMs, pollMs })
+    Object.assign(this, { command, args, env, cwd, port, spawnImpl, healthCheck, log, startupTimeoutMs, stopGraceMs, pollMs, platform })
     this.child = null
     this.status = 'stopped'
     this.external = false
@@ -68,7 +69,8 @@ export class HubProcess {
     const child = this.spawnImpl(this.command, this.args, {
       cwd: this.cwd,
       env: { ...process.env, ...this.env },
-      stdio: ['ignore', 'pipe', 'pipe'],
+      // The 'ipc' channel lets the app ask the hub to stop on Windows (see stop()).
+      stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
       windowsHide: true,
     })
     this.child = child
@@ -116,7 +118,9 @@ export class HubProcess {
     }
     this.status = 'stopping'
     const exited = new Promise((resolve) => child.once('exit', resolve))
-    child.kill('SIGTERM')
+    // On Windows a signal ends the hub without its shutdown, so the hub is asked to stop over the message channel.
+    if (this.platform === 'win32' && child.connected) child.send('stop')
+    else child.kill('SIGTERM')
     const timer = setTimeout(() => child.kill('SIGKILL'), this.stopGraceMs)
     await exited
     clearTimeout(timer)

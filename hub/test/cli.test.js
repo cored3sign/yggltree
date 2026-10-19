@@ -75,7 +75,9 @@ describe('cli argument parsing', () => {
 })
 
 describe('cli process', () => {
-  it('prints the banner, serves, and on SIGTERM closes and releases the lock', async () => {
+  // Windows ends a process on SIGTERM without running its handlers, so a clean shutdown can't be checked there. On
+  // Windows the desktop app stops the hub with a message instead, which the desktop tests cover.
+  it.skipIf(process.platform === 'win32')('prints the banner, serves, and on SIGTERM closes and releases the lock', async () => {
     const dataDir = await fx.tmpDir('hub-data-')
     const distDir = await fx.distFixture()
     const run = runCli(['--port', '0', '--data', dataDir, '--dist', distDir])

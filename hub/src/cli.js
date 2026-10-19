@@ -221,6 +221,12 @@ export async function main({
     }
     process.on('SIGINT', () => stop('SIGINT'))
     process.on('SIGTERM', () => stop('SIGTERM'))
+    // The desktop app asks for a stop this way on Windows, where a signal ends the process without running this.
+    if (process.send) {
+      process.on('message', (message) => {
+        if (message === 'stop') stop('stop request')
+      })
+    }
   })
 }
 
