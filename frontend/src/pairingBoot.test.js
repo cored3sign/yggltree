@@ -67,8 +67,9 @@ describe('pairingBoot', () => {
   })
 
   it('main.js imports ./pairingBoot before anything else', () => {
+    // Windows checks files out with CRLF line endings, so split on either.
     const src = readFileSync(fileURLToPath(new URL('./main.js', import.meta.url)), 'utf8')
-    const firstImport = src.split('\n').find((line) => line.startsWith('import '))
+    const firstImport = src.split(/\r?\n/).find((line) => line.startsWith('import '))
     expect(firstImport).toBe("import './pairingBoot'")
   })
 })
