@@ -8,7 +8,8 @@ import { fileURLToPath } from 'node:url'
 // imports or loads but isn't listed works from source and crashes the installed app at startup, so every
 // desktop file the app needs is checked here.
 const desktop = join(dirname(fileURLToPath(import.meta.url)), '..')
-const config = readFileSync(join(desktop, 'electron-builder.yml'), 'utf8')
+// Windows checks files out with CRLF line endings; the match below expects LF.
+const config = readFileSync(join(desktop, 'electron-builder.yml'), 'utf8').replace(/\r\n/g, '\n')
 const block = config.match(/^files:\n((?:  - .*\n?)+)/m)
 const packaged = new Set(block ? block[1].split('\n').filter((line) => line.startsWith('  - ')).map((line) => line.slice(4).trim()) : [])
 
