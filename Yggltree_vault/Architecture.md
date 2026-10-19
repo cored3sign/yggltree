@@ -1,7 +1,7 @@
 ---
 title: Architecture
 tags: [architecture, frontend, data-layer, hub, sync]
-updated: 2026-10-09
+updated: 2026-10-18
 ---
 
 # Architecture
@@ -163,8 +163,9 @@ dataDir.js      the default data folder per platform
   Override with `--data <dir>` or `YGGLTREE_DATA`. See [[Data-Model]]
   for the files inside.
 - **Daily backups.** At startup and every 24 h, if the family changed, the
-  hub writes `backups/yggltree-YYYY-MM-DD.fhub.json` in the same format
-  as an in-app backup, keeping the newest 14.
+  hub writes `backups/yggltree-YYYY-MM-DD.yggltree.json` in the same format
+  as an in-app backup, keeping the newest 14. Older `.fhub.json` files are
+  still read, restored and pruned.
 
 ## The sync layer (`src/data/sync/`)
 
@@ -185,7 +186,10 @@ status.js     the five sync states and their copy
 - **Phones join through the relay, not the hub.** A phone scans the family QR
   code from **Settings → Sync** (or pastes the family link). The link
   carries the family key in its `#relay=1.<key>` fragment, which is never sent
-  to a server. The hub issues no pairing codes.
+  to a server. The hub issues no pairing codes. The Mac can join an existing
+  family the same way, from **Settings → Sync → Join a family that already
+  syncs**. A bare relay address instead starts a new family key, after a
+  confirmation, since phones on the old key can't follow it.
 - **Room-binding invariant.** A device's IndexedDB state belongs to
   `config.roomId`. `applyPairing()` is the only writer of `roomId`, and
   switching rooms always wipes both IndexedDB databases first
@@ -299,6 +303,32 @@ browser has no live connection, that this computer's family isn't on the
 hub yet; "Not syncing" there says the hub was restored or reset and asks
 for a reload.
 
+On a phone that syncs through the relay, the connecting screen names the step
+it's on: opening this browser's storage, reaching the family relay, waiting for
+the family's data, or synced (`data/relay/stage.js`). Opening the local outbox
+gets `STORAGE_WAIT_MS` (5 s) before the connection starts anyway. When an attempt
+to reach the relay ends, the screen shows the browser's close code (1006 means
+the connection failed before it opened) and the number of attempts.
+
+## Relay connection (`data/relay/`)
+
+- **Two rooms per family.** `connection.js` opens one `provider.js` room for the
+  main data, which drives the status, and one for the photos. Room ids and the
+  auth token both come from the family key by HKDF (`deriveRoomId`,
+  `deriveAuth`), so the key is the only secret a phone needs.
+- **The handshake.** The client sends `hello {since, auth}`. The relay replies
+  with the entries after `since`, then `caught-up`. Nothing is sent before
+  `caught-up`. A wrong key gets `error: auth` and close 4401, and the phone
+  stops retrying and shows the problem.
+- **The WebSocket address.** `relaySocketUrl()` turns the relay's `https://` into
+  `wss://` (and `http://` into `ws://`) for every connection. Some browsers refuse
+  an `https://` address for a WebSocket.
+- **Failures are reported, not swallowed.** A WebSocket the browser refuses to
+  construct counts as a failed attempt, with its error name shown on the
+  connecting screen.
+
+## Secure-context notes
+
 ## The restore model
 
 Restoring runs **on the hub, into a new room with a new token**
@@ -327,9 +357,9 @@ context, so:
   home-screen icon opens without a connection once it has run at that address.
 - **`crypto.randomUUID`** is missing; `ids.js` falls back to a
   `getRandomValues`-based UUID.
-- **Camera barcode scanning** (`getUserMedia`) is blocked;
-  `BarcodeScanner.vue` checks `window.isSecureContext` and points to manual
-  ISBN entry.
+- **Camera barcode scanning** (`getUserMedia`) needs a secure context: `https://`
+  (the relay) or `localhost`. On a plain `http://` address, `BarcodeScanner.vue`
+  checks `window.isSecureContext` and points to manual ISBN entry.
 - Fine over http: IndexedDB, BroadcastChannel, `createImageBitmap`, object
   URLs.
 
@@ -422,7 +452,8 @@ Two separate export paths:
 - **Full backup** (`createBackup` / `parseBackup` in `backupFormat.js`,
   shared with the hub) — the complete Yjs state (`Y.encodeStateAsUpdate`)
   of *both* docs, base64-encoded into one JSON file
-  (`format: "family-hub-backup"`, saved as `.fhub.json`). Any admin can
+  (`format: "family-hub-backup"`, saved as `.yggltree.json`; older `.fhub.json`
+  files still restore). Any admin can
   download one; restoring goes through the hub (see "The restore model"
   above). The hub's automatic daily backups use the same format.
 - **JSON export** (`exportJson`) — a human-readable snapshot (settings plus

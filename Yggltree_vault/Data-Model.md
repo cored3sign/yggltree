@@ -1,7 +1,7 @@
 ---
 title: Data Model
 tags: [architecture, data-layer, crdt]
-updated: 2026-10-08
+updated: 2026-10-18
 ---
 
 # Data Model
@@ -203,7 +203,7 @@ hub.json     { v: 1,
                }
 hub.lock     { pid, startedAt }   one hub per data folder
 rooms/<roomId>/main.snapshot  main.log  assets.snapshot  assets.log
-backups/yggltree-YYYY-MM-DD.fhub.json   newest 14 kept
+backups/yggltree-YYYY-MM-DD.yggltree.json   newest 14 kept (older .fhub.json files are still read)
 backups/last-backup.json                  fingerprint of the last backup
 ```
 

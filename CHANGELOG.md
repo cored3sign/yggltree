@@ -2,15 +2,18 @@
 
 What changed in each version of Yggltree. Each release page on GitHub shows its section from this file as its notes.
 
-## Unreleased
+## 1.0.1 (2026-10-18)
 
 ### Added
 
 - **Join with a family link.** On a Mac that's reinstalled or moved over from the source version, paste the family link from **Add a device** into **Settings → Sync**. The Mac joins the same family room, so the phones stay connected.
 - **Wishlist artwork.** The wishlist drawing is in the empty state, in every color theme, and on the product page.
+- **Version and build on the Help page.** The About section shows the version, the build, and whether this copy runs on the family computer or from the relay, so you can check that devices match.
 
 ### Fixed
 
+- Some phones, including older Android phones on Chrome, stayed on **Connecting…** forever. The relay connection now uses a secure WebSocket address, which every browser accepts.
+- The connecting screen names the step it's on, and shows the browser's error code when a connection to the relay fails. Browser storage that doesn't open no longer blocks the connection.
 - The Mac app uses the Cloudflare sign-in already on the computer, so updating the relay works. A relay card with no Cloudflare sign-in now shows **Connect Cloudflare**.
 
 ### Changed

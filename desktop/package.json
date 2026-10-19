@@ -1,6 +1,6 @@
 {
   "name": "yggltree-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "The Yggltree desktop app: a window and a menu bar leaf for the family computer.",
   "type": "module",

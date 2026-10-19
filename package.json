@@ -1,9 +1,14 @@
 {
   "name": "yggltree",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
-  "workspaces": ["frontend", "hub"],
-  "engines": { "node": ">=22.12" },
+  "workspaces": [
+    "frontend",
+    "hub"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "start": "node scripts/start.cjs",
     "build": "npm run build -w frontend",

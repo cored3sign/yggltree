@@ -1,7 +1,7 @@
 ---
 title: Roadmap and known limits
 tags: [roadmap, known-issues]
-updated: 2026-10-10
+updated: 2026-10-18
 ---
 
 # Roadmap and known limits
@@ -12,8 +12,8 @@ updated: 2026-10-10
   every other phone re-joins with. Not built. Until then a lost phone keeps the key.
 - **Restore with phones on the relay.** A restore on the family computer hasn't been
   tested with phones that sync through the relay. Check it before relying on it.
-- **Relay setup on main.** The Deploy to Cloudflare button points at the `relay-setup`
-  branch and hasn't been tested end to end from a fresh Cloudflare account.
+- **Relay setup from a fresh account.** The Deploy to Cloudflare button (in
+  `relay/README.md`) hasn't been tested end to end from a fresh Cloudflare account.
 - **Phone-only families.** Starting a family from a phone with no family computer
   isn't built.
 
@@ -37,6 +37,13 @@ updated: 2026-10-10
   plan's limits are in `relay/README.md`.
 - Turning off the relay on one phone only affects that phone. Nothing can remove a
   phone from the family remotely yet.
+- Updating the relay from the Mac needs a Cloudflare sign-in on that Mac: a
+  Wrangler login, or **Connect Cloudflare** on the relay card.
+- A bare relay address starts a new family key, which phones on the old key can't
+  follow. The app asks first. To join an existing family, use the family link.
+- Yggltree needs a browser from the last few years. A browser that refuses the
+  connection shows its error code on the connecting screen instead of waiting
+  silently.
 
 **Home-screen icons (iPhone)**
 - A home-screen icon keeps its own copy of the app, separate from Safari, so

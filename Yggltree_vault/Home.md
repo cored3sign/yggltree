@@ -1,7 +1,7 @@
 ---
 title: Yggltree documentation
 tags: [index]
-updated: 2026-10-09
+updated: 2026-10-18
 ---
 
 # Yggltree documentation

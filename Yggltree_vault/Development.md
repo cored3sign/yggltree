@@ -1,7 +1,7 @@
 ---
 title: Development
 tags: [development, testing, frontend, hub]
-updated: 2026-10-08
+updated: 2026-10-18
 ---
 
 # Development
@@ -223,8 +223,16 @@ and is not a workspace, so the source install doesn't pull in Electron.
   `YGGLTREE_WRANGLER_BIN`, `YGGLTREE_RELAY_DIR` and `YGGLTREE_RELAY_PREBUILT` for the
   hub. Wrangler runs with the app's own Node (`ELECTRON_RUN_AS_NODE`), from a copy
   of the relay under the data folder, because the app's files are read-only.
-- **Release:** bump the version in the root `package.json` (the app reports it),
-  then push a `v*` tag. `.github/workflows/release.yml` builds both DMGs on
+  Wrangler is started through `hub/src/wranglerPreload.cjs`, which sets
+  `process.defaultApp`. Without it, Wrangler under Electron reads its arguments
+  from the wrong place, and every relay command fails, including the sign-in
+  check. Keep that preload when changing how Wrangler starts.
+- **Release:** bump the version in the root and `desktop/package.json` (the app
+  reports the root number). Add a `## <version> (<date>)` section to
+  `CHANGELOG.md`, since the release page uses that section as its notes. Commit,
+  then push a `v<version>` tag. The workflow refuses a tag that doesn't match the
+  root version. After the release, update the family relay from the Mac so phones
+  get the same build. `.github/workflows/release.yml` builds both DMGs on
   their own runners, runs the tests, writes `SHA256SUMS.txt`, and publishes the
   release. The product page and the README link to `releases/latest`.
 - **Signing:** the app is ad-hoc signed, not notarized. Families use **Open
