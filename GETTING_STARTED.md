@@ -315,7 +315,7 @@ To turn off the daily check, choose **Check for updates every day** in the menu 
 | The window says **Another program appears to be using Yggltree's data folder** | Usually left over after a crash. If Yggltree really isn't running, delete the `hub.lock` file the message names and start again. |
 | The family computer shows **Yggltree isn't running** | Open Yggltree from Applications, or choose **Start Yggltree** from the leaf in the menu bar. |
 | The relay field says to paste a family link or a relay address | Paste the whole family link from **Add a device**. For a relay with no phones on it yet, paste the address Cloudflare gave you, which starts with `https://`. |
-| There's no QR code in **Settings → Sync** | Only admins see it. Expand **Add a device** to show it. Ask an admin to open the page on the family computer. |
+| There's no QR code in **Settings → Sync** | Only admins see it, on the family computer. Expand **Add a device** to show it. Ask an admin to open the page on the family computer. |
 | Scanning the QR code doesn't work | Make sure you allowed the camera when the phone asked. Or tap **Or paste the family link** and paste the link from the family computer. |
 | The phone shows **Join your family** after you've joined | Scan the family QR code again from **Settings → Sync**. |
 | The phone shows **Not syncing** | Check the phone has a connection (Wi-Fi or mobile data). Open the icon again. If it still says **Not syncing**, scan the family QR code again. |

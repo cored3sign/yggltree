@@ -73,7 +73,11 @@ async function start() {
     return
   }
 
-  if (!videoEl.value) return
+  // Closed or unmounted while the permission prompt was open: release the stream we just got.
+  if (!videoEl.value) {
+    stop()
+    return
+  }
   videoEl.value.srcObject = mediaStream
   await videoEl.value.play()
   status.value = 'scanning'
@@ -165,9 +169,12 @@ function closeAndStop() {
 // permission prompt, then the live view. No second "start" step.
 onMounted(() => {
   if (props.kind === 'qr') start()
+  // The desktop app hides the window rather than unloading the page, so the camera must stop on hide.
+  window.addEventListener('yggltree:hidden', closeAndStop)
 })
 
 onBeforeUnmount(stop)
+onBeforeUnmount(() => window.removeEventListener('yggltree:hidden', closeAndStop))
 
 defineExpose({ start, stop })
 </script>

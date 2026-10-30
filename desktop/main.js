@@ -123,9 +123,19 @@ function openWindow(route = '/') {
         contextIsolation: true,
         nodeIntegration: false,
         sandbox: true,
+        // Keeps the page's relay link running while the window is hidden.
+        backgroundThrottling: false,
       },
     })
     win.once('ready-to-show', () => win.show())
+    // Closing hides the window, so the page keeps its link to the family relay. A quit still closes it.
+    win.on('close', (event) => {
+      if (quitting) return
+      event.preventDefault()
+      win.hide()
+      // The page keeps running for the relay link, so the scanner must be told to stop its camera.
+      win.webContents.executeJavaScript("window.dispatchEvent(new Event('yggltree:hidden'))").catch(() => {})
+    })
     win.on('closed', () => {
       win = null
     })

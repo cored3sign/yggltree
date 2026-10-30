@@ -27,6 +27,7 @@ import { isStandaloneApp, isIosSafariTab } from '../lib/platform.js'
 import { newFamilyKey, deriveRoomId, deriveAuth, toBase64Url } from '../data/relay/crypto'
 import QRCode from 'qrcode'
 import { createHubApi } from '../data/sync/hubApi.js'
+import { isLoopbackHostname } from '../data/sync/boot.js'
 import { relayNameOf, relayVersionState } from '../data/relay/version.js'
 import { listDevices, describeLastSeen, thisDeviceLabel } from '../data/presence.js'
 
@@ -304,6 +305,8 @@ function startRelay() {
 // --- Set up the relay from this computer. The Cloudflare token stays on this computer, and the
 // hub creates or deletes the relay on the family's Cloudflare account.
 const hubRelay = createHubApi({ baseUrl: globalThis.location?.origin ?? '' })
+// The hub answers its admin routes only on its own computer (loopback), so the relay's admin controls show only there.
+const onHubComputer = isLoopbackHostname(globalThis.location?.hostname)
 
 // --- Relay version: phones get the app from the relay, so an older relay means older phones.
 // Updating sends this app's build to the relay under the same name. Nothing is deleted.
@@ -899,13 +902,13 @@ function initials(name) {
       </AppCard>
     </section>
 
-    <!-- Sync: how this device's family connects. Setting up the relay and adding devices is for admins. -->
-    <section v-if="core.isAdmin || relay" class="settings-group" aria-labelledby="group-sync">
+    <!-- Sync: how this device's family connects. Setting up the relay and adding devices is for admins on the hub computer. An admin with no relay can join a family from here. -->
+    <section v-if="relay || core.isAdmin" class="settings-group" aria-labelledby="group-sync">
       <h2 id="group-sync" class="settings-group__title">Sync</h2>
       <p class="settings-group__note">The connection between your devices.</p>
 
       <!-- Relay: sync through a relay the family runs on its own account. -->
-      <AppCard v-if="core.isAdmin || relay" class="settings-card">
+      <AppCard v-if="relay || core.isAdmin" class="settings-card">
         <div class="settings-card__header">
           <span class="settings-icon-tile settings-icon-tile--data">
             <Database :size="20" />
@@ -913,10 +916,10 @@ function initials(name) {
           <h3>Relay</h3>
         </div>
 
-        <!-- A relay is set up on this device: show its status. Admins can add a device from here. -->
+        <!-- A relay is set up on this device: show its status. Admins on the hub computer can add a device from here. -->
         <template v-if="relay">
           <p class="hint">Syncing through your relay.</p>
-          <template v-if="core.isAdmin">
+          <template v-if="core.isAdmin && onHubComputer">
             <p v-if="relayVersion === 'current'" class="hint">
               Phones get this version of Yggltree from your relay. It's up to date.
             </p>
@@ -941,7 +944,7 @@ function initials(name) {
             </template>
             <p v-if="relayUpdateMessage" class="hint">{{ relayUpdateMessage }}</p>
           </template>
-          <details v-if="core.isAdmin" class="relay-setup">
+          <details v-if="core.isAdmin && onHubComputer" class="relay-setup">
             <summary>Add a device</summary>
             <p class="hint">
               Scan this code with a phone's camera, or open the link on the device. Keep it private: the link contains
@@ -952,18 +955,20 @@ function initials(name) {
           </details>
         </template>
 
-        <!-- No relay yet: one name, one button. -->
-        <div v-else class="relay-setup">
-          <p class="hint">
-            Phones sync through a relay on your own Cloudflare account. Name it, and Yggltree sets it up for you.
-          </p>
-          <label class="form-field">
-            <span class="form-field__label">Relay name</span>
-            <input v-model="relayNameInput" type="text" autocomplete="off" />
-          </label>
-          <AppButton variant="primary" :disabled="relaySetupBusy !== ''" @click="setUpRelay">{{ setUpLabel }}</AppButton>
-          <p class="hint">The first time, your browser opens a Cloudflare page. Click Allow there, then come back.</p>
-          <p v-if="relaySetupError" class="error">{{ relaySetupError }}</p>
+        <!-- No relay yet. Setting one up is for the hub computer; any admin can join a family that already syncs. -->
+        <div v-else-if="core.isAdmin" class="relay-setup">
+          <template v-if="onHubComputer">
+            <p class="hint">
+              Phones sync through a relay on your own Cloudflare account. Name it, and Yggltree sets it up for you.
+            </p>
+            <label class="form-field">
+              <span class="form-field__label">Relay name</span>
+              <input v-model="relayNameInput" type="text" autocomplete="off" />
+            </label>
+            <AppButton variant="primary" :disabled="relaySetupBusy !== ''" @click="setUpRelay">{{ setUpLabel }}</AppButton>
+            <p class="hint">The first time, your browser opens a Cloudflare page. Click Allow there, then come back.</p>
+            <p v-if="relaySetupError" class="error">{{ relaySetupError }}</p>
+          </template>
 
           <details class="relay-setup__advanced">
             <summary>Join a family that already syncs, or use a relay address</summary>
@@ -979,7 +984,7 @@ function initials(name) {
             <p v-if="relayError" class="error">{{ relayError }}</p>
           </details>
 
-          <details class="relay-setup__advanced">
+          <details v-if="onHubComputer" class="relay-setup__advanced">
             <summary>Use a Cloudflare API token instead</summary>
             <label class="form-field">
               <span class="form-field__label">Cloudflare API token</span>
@@ -996,7 +1001,7 @@ function initials(name) {
         </div>
 
         <!-- A relay exists: manage it from a quiet section. -->
-        <details v-if="core.isAdmin && relay" class="relay-setup">
+        <details v-if="core.isAdmin && onHubComputer && relay" class="relay-setup">
           <summary>Manage the relay</summary>
           <p class="hint">Relay: <strong>{{ relay.url }}</strong></p>
           <p v-if="cloudflare.connected" class="hint">
