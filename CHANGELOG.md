@@ -2,6 +2,14 @@
 
 What changed in each version of Yggltree. Each release page on GitHub shows its section from this file as its notes.
 
+## 1.1.1 (2026-10-30)
+
+### Fixed
+
+- Closing the window on the family computer no longer stops phones from syncing. The window stays in the menu bar, and a barcode or QR scan stops its camera when the window is closed.
+- Phones don't show the relay's Cloudflare controls. Those work only on the family computer.
+- An admin phone with no relay can join a family from Settings again.
+
 ## 1.1.0 (2026-10-29)
 
 ### Added
