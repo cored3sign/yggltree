@@ -357,7 +357,7 @@ Every module is open to everyone in the family. There is nothing to switch on.
 
 **Your bottom menu.** On a phone, the four slots at the bottom are yours to choose. Open **Modules**, pin the ones you use most, and move them up or down to set their order. Pins belong to you, not to the family, so they follow you to every device. On a computer, every module is in the left-hand menu, so pins don't apply there.
 
-**Birthdays.** Enter a name and the month and day. The year born is optional. An age works out the year, so you can enter either. If the person is in the family, choose them, and they won't get a reminder about their own birthday. Everyone else gets a reminder on the day. If nobody had Yggltree open that day, the reminder comes the next time someone opens it, for up to six days.
+**Birthdays.** Enter a name and the month and day. The year born is optional. An age works out the year, so you can enter either. If the person is in the family, choose them, and they won't get a reminder about their own birthday. Everyone else gets a reminder on the day. If nobody had Yggltree open that day, the reminder comes the next time someone opens it, for up to six days. On the Birthdays page, choose **Calendar** to see the month's birthdays on a grid, and tap a day to see whose birthday it is.
 
 **1:1 time.** To ask for a 1:1, open **Speak**, choose **Ask for 1:1**, and pick a person and a proposed date. They get a notification. Tapping it opens a screen where they accept on a date or say they can't make it. You're told either way. An accepted 1:1 goes on the calendar and under **Upcoming** in Speak.
 

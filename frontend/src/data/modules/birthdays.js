@@ -148,6 +148,20 @@ export function listBirthdays(doc, today = todayIso()) {
     .sort((a, b) => a.next_date.localeCompare(b.next_date) || byText(a.name, b.name))
 }
 
+// The birthdays celebrated in one month of one year, from the list listBirthdays returns (month is 1 to 12). Each keeps
+// its list fields, with the celebration date that year and the age on that day. Soonest first.
+export function celebrationsInMonth(list, year, month) {
+  return list
+    .filter((b) => b.birth_year == null || year >= b.birth_year)
+    .map((b) => {
+      const parts = { month: b.birth_month, day: b.birth_day, year: b.birth_year }
+      const date = celebrationDate(parts, year)
+      return { ...b, date, turns: ageOn(parts, date) }
+    })
+    .filter((b) => Number(b.date.slice(5, 7)) === month)
+    .sort((a, b) => a.date.localeCompare(b.date) || byText(a.name, b.name))
+}
+
 function reminderText(name, turns, daysAgo) {
   const age = turns !== null && turns >= 1
   if (daysAgo === 0) return age ? `Today is ${name}'s birthday, turning ${turns}.` : `Today is ${name}'s birthday.`

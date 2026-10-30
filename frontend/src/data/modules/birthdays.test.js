@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { newFamilyDoc, forkDoc, syncDocs } from '../testing'
 import { insert } from '../collection'
 import { listNotifications } from '../notifications'
-import { ageOn, celebrationDate, deleteBirthday, listBirthdays, nextCelebration, recordBirthdayReminders, saveBirthday } from './birthdays'
+import { ageOn, celebrationDate, celebrationsInMonth, deleteBirthday, listBirthdays, nextCelebration, recordBirthdayReminders, saveBirthday } from './birthdays'
 
 const TODAY = '2026-10-15'
 
@@ -179,5 +179,49 @@ describe('birthdays: reminders', () => {
     const { doc } = newFamilyDoc()
     insert(doc, 'birthdays', { name: 'Old Entry', birth_date: '2018-10-20' }, 'legacy')
     expect(listBirthdays(doc, TODAY)).toEqual([expect.objectContaining({ name: 'Old Entry', birth_year: 2018, next_date: '2026-10-20', turns: 8 })])
+  })
+})
+
+describe('birthdays: calendar', () => {
+  it('the birthdays in a month come back soonest first, each with the age on that day', () => {
+    const { doc } = newFamilyDoc()
+    saveBirthday(doc, { name: 'Ana', birth_month: 10, birth_day: 20, birth_year: 2018 }, TODAY)
+    saveBirthday(doc, { name: 'Zoe', birth_month: 10, birth_day: 1, birth_year: 2019 }, TODAY)
+    saveBirthday(doc, { name: 'Ben', birth_month: 12, birth_day: 1, birth_year: 2015 }, TODAY)
+    expect(celebrationsInMonth(listBirthdays(doc, TODAY), 2026, 10).map((b) => [b.name, b.date, b.turns])).toEqual([
+      ['Zoe', '2026-10-01', 7],
+      ['Ana', '2026-10-20', 8],
+    ])
+  })
+
+  it('a 29 February birthday is listed on 28 February in 2027, and on 29 February in 2028', () => {
+    const { doc } = newFamilyDoc()
+    saveBirthday(doc, { name: 'Leap', birth_month: 2, birth_day: 29, birth_year: 2020 }, TODAY)
+    const list = listBirthdays(doc, TODAY)
+    expect(celebrationsInMonth(list, 2027, 2)).toEqual([expect.objectContaining({ name: 'Leap', date: '2027-02-28', turns: 7 })])
+    expect(celebrationsInMonth(list, 2028, 2)).toEqual([expect.objectContaining({ name: 'Leap', date: '2028-02-29', turns: 8 })])
+  })
+
+  it('nothing is listed for a year before the year born', () => {
+    const { doc } = newFamilyDoc()
+    saveBirthday(doc, { name: 'Early', birth_month: 3, birth_day: 14, birth_year: 2019 }, TODAY)
+    expect(celebrationsInMonth(listBirthdays(doc, TODAY), 2018, 3)).toEqual([])
+    expect(celebrationsInMonth(listBirthdays(doc, TODAY), 2019, 3)).toEqual([expect.objectContaining({ name: 'Early', turns: 0 })])
+  })
+
+  it('a birthday with no year born is listed, with turns null', () => {
+    const { doc } = newFamilyDoc()
+    saveBirthday(doc, { name: 'Ben', birth_month: 3, birth_day: 14 }, TODAY)
+    expect(celebrationsInMonth(listBirthdays(doc, TODAY), 2027, 3)).toEqual([
+      expect.objectContaining({ name: 'Ben', date: '2027-03-14', turns: null }),
+    ])
+  })
+
+  it('an older entry that stored only a birth date is listed too', () => {
+    const { doc } = newFamilyDoc()
+    insert(doc, 'birthdays', { name: 'Old Entry', birth_date: '2018-10-20' }, 'legacy')
+    expect(celebrationsInMonth(listBirthdays(doc, TODAY), 2026, 10)).toEqual([
+      expect.objectContaining({ name: 'Old Entry', date: '2026-10-20', turns: 8 }),
+    ])
   })
 })
