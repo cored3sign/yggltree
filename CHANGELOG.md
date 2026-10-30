@@ -2,6 +2,12 @@
 
 What changed in each version of Yggltree. Each release page on GitHub shows its section from this file as its notes.
 
+## 1.1.0 (2026-10-29)
+
+### Added
+
+- **Birthdays calendar.** The Birthdays page has a **Calendar** view: a month grid that shows each day's birthdays. Tap a day to see whose birthday it is, and tap a birthday to edit it.
+
 ## 1.0.1 (2026-10-18)
 
 ### Added
