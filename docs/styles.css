@@ -400,30 +400,70 @@ p {
   color: var(--text-muted);
 }
 
-/* "See how it works" sits under the screenshot, on the caption's row, so it doesn't join the download buttons. */
-.hero-media {
-  position: relative;
+/* The hero's buttons share one row: the two downloads under the copy, and "See how it works" centered under the
+   screenshots. The grid has no row gap, so each row's spacing comes from its own margin. */
+.hero-grid {
+  row-gap: 0;
+}
+
+.hero-copy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.hero-visual {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.hero-actions {
+  grid-column: 1;
+  grid-row: 2;
+  margin-top: 2rem;
 }
 
 .hero-media__more {
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: center;
+  margin-top: 2rem;
 }
 
-/* Desktop: lift the phone above that row, so the button doesn't sit on it. */
-@media (min-width: 961px) {
-  .hero-visual .phone {
-    bottom: 3.5rem;
-  }
+.hero-fine {
+  grid-column: 1;
+  grid-row: 3;
 }
 
-/* Narrow screens: the caption is too long to share the row, so the button goes below the screenshot. */
+/* Narrow screens: one column, in reading order. */
 @media (max-width: 960px) {
+  .hero-copy,
+  .hero-visual,
+  .hero-actions,
+  .hero-media__more,
+  .hero-fine {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .hero-copy {
+    order: 1;
+  }
+
+  .hero-actions {
+    order: 2;
+  }
+
+  .hero-fine {
+    order: 3;
+  }
+
+  .hero-visual {
+    order: 4;
+  }
+
   .hero-media__more {
-    position: static;
-    margin-top: 12px;
-    text-align: right;
+    order: 5;
+    margin-top: 1.5rem;
   }
 }
 
