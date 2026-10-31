@@ -400,6 +400,33 @@ p {
   color: var(--text-muted);
 }
 
+/* "See how it works" sits under the screenshot, on the caption's row, so it doesn't join the download buttons. */
+.hero-media {
+  position: relative;
+}
+
+.hero-media__more {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+/* Desktop: lift the phone above that row, so the button doesn't sit on it. */
+@media (min-width: 961px) {
+  .hero-visual .phone {
+    bottom: 3.5rem;
+  }
+}
+
+/* Narrow screens: the caption is too long to share the row, so the button goes below the screenshot. */
+@media (max-width: 960px) {
+  .hero-media__more {
+    position: static;
+    margin-top: 12px;
+    text-align: right;
+  }
+}
+
 /* Trust strip: four promises on the page's center line, each with a drawn icon in an outlined circle */
 
 .strip {
