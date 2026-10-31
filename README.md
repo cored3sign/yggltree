@@ -32,8 +32,8 @@ other way round:
   "something changed" ping, with no content.
 - **Open Library**, only if you look up a book by its ISBN: the ISBN is sent, and
   the cover loads from it.
-- **GitHub**, only for the Mac app's daily check for a newer version. You can turn
-  the check off in the menu bar.
+- **GitHub**, only for the app's daily check for a newer version. You can turn
+  the check off in the menu bar (the system tray on Windows).
 - **The Yggltree maintainers:** nothing. There are no servers and no analytics.
 
 Phones join by **scanning a QR code**, and they sync from anywhere. There's no
@@ -52,28 +52,32 @@ offline and syncs when it can.
 
 ## Quick start
 
-You need a Mac that stays at home and a free [Cloudflare](https://cloudflare.com)
-account for the family relay. (Windows is coming next.)
+You need a Mac or a 64-bit Windows PC that stays at home, and a free
+[Cloudflare](https://cloudflare.com) account for the family relay.
 
-1. **Download Yggltree** for your Mac:
+1. **Download Yggltree** for your computer:
    - **Apple silicon** (M1 and later): [Yggltree-arm64.dmg](https://github.com/cored3sign/yggltree/releases/latest/download/Yggltree-arm64.dmg)
    - **Intel:** [Yggltree-x64.dmg](https://github.com/cored3sign/yggltree/releases/latest/download/Yggltree-x64.dmg)
+   - **Windows** (64-bit): [Yggltree-Setup-x64.exe](https://github.com/cored3sign/yggltree/releases/latest), on the release page
 
-   Not sure which? Choose **About This Mac** from the Apple menu. "Chip: Apple M…"
-   means Apple silicon; "Processor: Intel" means Intel.
+   Not sure which Mac you have? Choose **About This Mac** from the Apple menu.
+   "Chip: Apple M…" means Apple silicon; "Processor: Intel" means Intel.
 2. **Drag Yggltree into Applications**, then open it from there. The first time,
    macOS may say it can't check the app. Open **System Settings → Privacy &
    Security**, scroll down, click **Open Anyway**, then open Yggltree again.
    (On macOS 14 and earlier, right-click Yggltree and choose **Open**.)
+   On Windows, run Yggltree-Setup-x64.exe instead. If Windows protects your PC,
+   choose **More info**, then **Run anyway**, because the installer isn't
+   code-signed yet.
 3. **Set up your family** in the window that opens. Yggltree stays in the menu bar
-   while the window is closed, so phones keep syncing.
+   (the system tray on Windows) while the window is closed, so phones keep syncing.
 4. **Set up the family relay:** in **Settings → Sync**, connect your Cloudflare
    account and name your relay. Yggltree creates it on your account.
 5. **Add devices:** in **Settings → Sync**, expand **Add a device** and scan the
    family QR code with each phone.
 
-Everything an admin needs afterwards is in the menu bar: restart Yggltree, update
-the relay, back up, and reset an admin PIN.
+Everything an admin needs afterwards is in the menu bar (the system tray on
+Windows): restart Yggltree, update the relay, back up, and reset an admin PIN.
 
 Your family's data is stored in `~/Library/Application Support/Yggltree`, so
 updating Yggltree never touches it.
@@ -121,7 +125,7 @@ cover tests, builds, and the desktop app's packaging.
 
 ## Roadmap
 
-- **Windows app**, built from the same desktop code as the Mac app.
+- **A signed Windows installer**, so Windows doesn't warn the first time.
 - **A signed Mac app**, so the first open needs no extra step.
 - **A hub on a cloud account you control**, for families without an always-on
   computer.

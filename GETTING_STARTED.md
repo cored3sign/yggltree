@@ -1,10 +1,10 @@
 # Getting Started with Yggltree
 
-This guide walks you through installing Yggltree on your family's Mac, setting up
-the family relay, and adding everyone's phones. You don't need to know how to
-program, and you don't need to type anything into Terminal.
+This guide walks you through installing Yggltree on your family's Mac or Windows
+PC, setting up the family relay, and adding everyone's phones. You don't need to
+know how to program, and you don't need to type anything into Terminal.
 
-**How it works:** Yggltree runs on one Mac in your home, which we call
+**How it works:** Yggltree runs on one Mac or Windows PC in your home, which we call
 the **family computer**. Phones and tablets sync through the **family relay**,
 a small free service on your own Cloudflare account. The relay only ever holds
 your family's data in encrypted form, so phones sync from anywhere: at home, on
@@ -20,7 +20,7 @@ company server that can read your data.
 
 1. [What you need](#1-what-you-need)
 2. [Install on a Mac](#2-install-on-a-mac)
-3. [Windows (coming next)](#3-windows-coming-next)
+3. [Install on Windows](#3-install-on-windows)
 4. [First-run setup](#4-first-run-setup)
 5. [Set up the family relay](#5-set-up-the-family-relay)
 6. [Add a device](#6-add-a-device)
@@ -34,13 +34,17 @@ company server that can read your data.
 14. [Using the modules](#14-using-the-modules)
 15. [Moving from running Yggltree from source](#15-moving-from-running-yggltree-from-source)
 
+On Windows, wherever this guide says **the menu bar**, look for the leaf in the
+system tray instead.
+
 ---
 
 ## 1. What you need
 
-- **A Mac that stays at home.** This is your family computer. Yggltree runs on
-  it, and it uploads its changes to the relay while it's running. Any Mac from
-  the last several years works. The download page lists the two kinds.
+- **A Mac or Windows PC that stays at home.** This is your family computer.
+  Yggltree runs on it, and it uploads its changes to the relay while it's running.
+  Any Mac from the last several years works, and so does a 64-bit Windows PC.
+  The download page lists the files for each.
 - **Internet access.** Phones reach the family relay over Wi-Fi or mobile data.
 - **A free Cloudflare account**, for the family relay (section 5).
 - Phones and tablets need a current web browser: Safari on iPhone and iPad,
@@ -82,10 +86,28 @@ of the screen. Closing the window doesn't stop Yggltree, so phones keep syncing.
 
 ---
 
-## 3. Windows (coming next)
+## 3. Install on Windows
 
-The Windows app isn't ready yet. It will use the same desktop app as the Mac
-version. Until then, Yggltree runs on a Mac.
+**Step 1: Download Yggltree.**
+
+1. Open the [release page](https://github.com/cored3sign/yggltree/releases/latest)
+   and download **Yggltree-Setup-x64.exe**. It's for 64-bit Windows PCs.
+
+**Step 2: Install Yggltree.**
+
+1. Open the downloaded file. Windows may say **Windows protected your PC**, because
+   the installer isn't code-signed yet. Choose **More info**, then **Run anyway**.
+2. Follow the installer. It doesn't ask for a folder. It adds a **Yggltree**
+   shortcut to your desktop and to the Start menu.
+3. Open Yggltree from the desktop shortcut or the Start menu.
+
+Yggltree opens its own window and puts a leaf icon in the system tray, near the
+clock. If you don't see it, open the up arrow (^) in the taskbar. Closing the
+window doesn't stop Yggltree, so phones keep syncing.
+
+**Check the download:** the release page lists a checksum for each file in
+`SHA256SUMS.txt`. In PowerShell, `Get-FileHash .\Downloads\Yggltree-Setup-x64.exe -Algorithm SHA256`
+should print the same value. The letters may be capitals.
 
 ---
 
@@ -208,7 +230,10 @@ it can reach the relay.
 - **Keep the Mac awake.** Also on by default: **Keep this Mac awake while Yggltree
   runs**. The family computer's own changes only reach the relay while it's awake.
   If you turn that off, check **System Settings → Energy** (or **Battery → Options**
-  on a laptop) so the Mac doesn't sleep.
+  on a laptop) so the Mac doesn't sleep. On Windows, the switch is the same item in
+  the tray menu. To keep the PC awake yourself, open **Settings → System → Power &
+  battery** (**Power & sleep** on Windows 10), and set sleep to **Never** while it's
+  plugged in.
 
 ---
 
@@ -292,12 +317,15 @@ with the backup's contents.
    exists, the leaf in the menu bar shows a dot and **Version … is available**. To
    check now, choose **Check for updates** from the menu.
 2. **Download it.** Choose the **Version … is available** item, and download the
-   file for your Mac (section 2).
+   file for your computer: the Mac file (section 2), or
+   Yggltree-Setup-x64.exe (section 3).
 3. **Replace the app.** Quit Yggltree from the menu bar, drag the new Yggltree into
-   Applications, and replace the old one. Then open Yggltree.
+   Applications, and replace the old one. On Windows, quit Yggltree from the system
+   tray and run the new installer instead. Then open Yggltree.
 
-Your family's data lives in `~/Library/Application Support/Yggltree`, not in the
-app, so it stays put. Phones keep their family and don't need to join again.
+On a Mac, your family's data lives in `~/Library/Application Support/Yggltree`.
+On Windows it's in `%APPDATA%\Yggltree`. Either way it's kept outside the app,
+so it stays put. Phones keep their family and don't need to join again.
 
 After an update, open **Settings → Sync**. If it says the relay serves an older
 version, choose **Update the relay**, enter your PIN, and wait a few minutes.
@@ -313,7 +341,7 @@ To turn off the daily check, choose **Check for updates every day** in the menu 
 | --- | --- |
 | The menu bar shows **Not running**, with **Port 8787 is being used by another program** | Close the other program, then choose **Start Yggltree** from the leaf in the menu bar. |
 | The window says **Another program appears to be using Yggltree's data folder** | Usually left over after a crash. If Yggltree really isn't running, delete the `hub.lock` file the message names and start again. |
-| The family computer shows **Yggltree isn't running** | Open Yggltree from Applications, or choose **Start Yggltree** from the leaf in the menu bar. |
+| The family computer shows **Yggltree isn't running** | Open Yggltree from Applications (on Windows, from the Start menu), or choose **Start Yggltree** from the leaf in the menu bar. |
 | The relay field says to paste a family link or a relay address | Paste the whole family link from **Add a device**. For a relay with no phones on it yet, paste the address Cloudflare gave you, which starts with `https://`. |
 | There's no QR code in **Settings → Sync** | Only admins see it, on the family computer. Expand **Add a device** to show it. Ask an admin to open the page on the family computer. |
 | Scanning the QR code doesn't work | Make sure you allowed the camera when the phone asked. Or tap **Or paste the family link** and paste the link from the family computer. |
@@ -328,6 +356,7 @@ To turn off the daily check, choose **Check for updates every day** in the menu 
 | The leaf in the menu bar has a dot | Something needs attention: the relay serves an older version, a new version is available, or Yggltree isn't running. Open the menu to see which. |
 | **Settings → Sync** says the relay serves an older version | Choose **Update the relay**, enter your PIN, and wait a few minutes. Phones get the new version the next time they open Yggltree. |
 | macOS says it can't check Yggltree when you open it | Follow the **Open Anyway** step in [section 2](#2-install-on-a-mac). |
+| Windows says it protected your PC | This is expected for now, because the installer isn't code-signed yet. Choose **More info**, then **Run anyway**. |
 
 ---
 
